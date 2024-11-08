@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import connectDatabase from "./config/dbConnection.js";
 import connectCloudinary from "./config/cloudinaryConnection.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +21,9 @@ app.use(express.urlencoded({ extended: true }));
 //Connection to dataBase and cloudinary
 connectDatabase();
 connectCloudinary();
+
+// Routes
+app.use("/api/auth", authRoutes);
 
 // 404 error handler
 app.use((req, res) => {
