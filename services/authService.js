@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 // Function to create a new user
-const createUserService = async (name, email, password) => {
-  // Check if user with this email already exists
+const createUserService = async (name, email, password, phone) => {
+  // Check if user with this email or phone number already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error("This email user already exists.");
@@ -19,6 +19,7 @@ const createUserService = async (name, email, password) => {
     name,
     email,
     password: hashedPassword,
+    phone,
   });
 
   // Save user to database

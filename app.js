@@ -5,6 +5,7 @@ import cors from "cors";
 import connectDatabase from "./config/dbConnection.js";
 import connectCloudinary from "./config/cloudinaryConnection.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ connectCloudinary();
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 // 404 error handler
 app.use((req, res) => {

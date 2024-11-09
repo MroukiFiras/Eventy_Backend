@@ -1,11 +1,16 @@
 import authService from "../services/authService.js";
 
-const createUserController = async (req, res) => {
+const createUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     // Call the service to create a new user
-    const newUser = await authService.createUserService(name, email, password);
+    const newUser = await authService.createUserService(
+      name,
+      email,
+      password,
+      phone
+    );
 
     // Generate a JWT token for the user
     const authToken = authService.generateAuthToken(newUser._id);
@@ -16,7 +21,6 @@ const createUserController = async (req, res) => {
       user: {
         id: newUser._id,
         name: newUser.name,
-        email: newUser.email,
       },
       state: true,
     });
@@ -26,7 +30,7 @@ const createUserController = async (req, res) => {
   }
 };
 
-const loginUserController = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -58,7 +62,7 @@ const logoutUser = (_, res) => {
     .json({ message: "User Logged Out", "auth-token": "" }); // Send confirmation message
 };
 export default {
-  createUserController,
-  loginUserController,
+  createUser,
+  loginUser,
   logoutUser,
 };
