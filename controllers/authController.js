@@ -1,4 +1,6 @@
 import authService from "../services/authService.js";
+import tokenUtils from "../utils/tokenUtils.js";
+import emailService from "../services/emailService.js"; 
 
 const createUser = async (req, res) => {
   try {
@@ -11,7 +13,7 @@ const createUser = async (req, res) => {
         .json({ message: "Passwords do not match.", state: false });
     }
 
-    // Call the service to create a new user
+    // Call the service to create a new user (without verifying email)
     const newUser = await authService.createUserService(
       name,
       email,
@@ -19,16 +21,21 @@ const createUser = async (req, res) => {
       phone
     );
 
-    // Generate a JWT token for the user
-    const authToken = authService.generateAuthToken(newUser._id);
+    // Generate a verification token and send the verification email
+    const verificationToken = tokenUtils.generateVerificationCode();
+    await emailService.sendVerificationEmail(newUser.email, verificationToken);
 
-    // Send response
-    res.header("auth-token", authToken).json({
-      message: "User has been created.",
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-      },
+    // Save the verification token in the database
+    newUser.tokenInfo = {
+      token: verificationToken,
+      tokenExpiration: Date.now() + 3600000, // 1 hour expiration time
+    };
+    await newUser.save();
+
+    // Send response with a message to check email for verification
+    res.json({
+      message:
+        "User created successfully. Please check your email to verify your account.",
       state: true,
     });
   } catch (error) {
@@ -65,9 +72,10 @@ const loginUser = async (req, res) => {
 const logoutUser = (_, res) => {
   // Clear the auth-token header to log the user out
   res
-    .header("auth-token", "") // Remove the auth-token from the header
-    .json({ message: "User Logged Out", "auth-token": "" }); // Send confirmation message
+    .header("auth-token", "")
+    .json({ message: "User Logged Out", "auth-token": "" });
 };
+
 export default {
   createUser,
   loginUser,

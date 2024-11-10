@@ -1,11 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
-/**
- * Verifies if the Authorization token is valid and returns the decoded token if valid.
- * @param {Object} headers - Request headers object.
- * @returns {Object|null} - Decoded token if valid, null otherwise.
- */
+// Verifies if the Authorization token is valid and returns the decoded token if valid.
 const isAuthenticated = (headers) => {
   // console.log("Received Headers:", headers); // Log headers to see what is being passed
   const authToken = headers["authorization"]?.split(" ")[1]; // Extract token from "Authorization: Bearer <token>"
@@ -21,9 +17,7 @@ const isAuthenticated = (headers) => {
   }
 };
 
-/**
- * Middleware to check if the request contains a valid Authorization token.
- */
+// Middleware to check if the request contains a valid Authorization token.
 const authTokenCheck = (req, res, next) => {
   if (isAuthenticated(req.headers)) {
     next();
@@ -32,9 +26,7 @@ const authTokenCheck = (req, res, next) => {
   }
 };
 
-/**
- * Middleware to authenticate the user and update their block status if applicable.
- */
+// Middleware to authenticate the user and update their block status if applicable.
 const checkUser = async (req, res, next) => {
   const token = isAuthenticated(req.headers);
 
@@ -63,12 +55,7 @@ const checkUser = async (req, res, next) => {
   }
 };
 
-/**
- * Checks the `blockStatus` of a user.
- * If the block duration has expired, updates `isBlocked` to `false`.
- * @param {Object} status - The current `blockStatus` object of the user.
- * @returns {Object} Updated `blockStatus` object.
- */
+// Checks the `blockStatus` of a user.
 const checkBlockState = (status) => {
   if (!status.isBlocked) return status;
 

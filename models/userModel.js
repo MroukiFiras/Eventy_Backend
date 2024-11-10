@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    tokenInfo: {
+      token: { type: String, min: 6, max: 8 },
+      tokenExpiration: { type: Date },
+    },
     userRole: {
       user: { type: Boolean, default: true },
       admin: { type: Boolean, default: false },

@@ -1,13 +1,12 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 // Function to create a new user
 const createUserService = async (name, email, password, phone) => {
-  // Check if user with this email or phone number already exists
+  // Check if user with this email already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    throw new Error("This email user already exists.");
+    throw new Error("This email is already taken.");
   }
 
   // Hash the password
@@ -20,16 +19,17 @@ const createUserService = async (name, email, password, phone) => {
     email,
     password: hashedPassword,
     phone,
+    hasVerifiedEmail: false,
+    tokenInfo: { token: "", tokenExpiration: null }, // Empty token initially
   });
 
   // Save user to database
   return await user.save();
 };
 
-//User Login
+// User Login
 const loginUserService = async (email, password) => {
-  // Find user by email
-  const user = await User.findOne({ email: email });
+  const user = await User.findOne({ email });
   if (!user) {
     throw new Error("Invalid email or password.");
   }
@@ -39,29 +39,9 @@ const loginUserService = async (email, password) => {
   if (!passwordCheck) {
     throw new Error("Invalid email or password.");
   }
-
-  // If password is correct, generate and return a JWT token
-  const authToken = generateAuthToken(user._id);
-  return {
-    message: "User logged in successfully.",
-    authToken,
-    user,
-  };
-};
-
-// Function to generate JWT token
-const generateAuthToken = (userId) => {
-  return jwt.sign(
-    {
-      id: userId,
-    },
-    process.env.AUTH_TOKEN_SECRET,
-    { expiresIn: "1h" }
-  );
 };
 
 export default {
   createUserService,
   loginUserService,
-  generateAuthToken,
 };
