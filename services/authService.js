@@ -55,7 +55,7 @@ const generateAuthToken = (userId) => {
     {
       id: userId,
     },
-    process.env.JWT_SECRET,
+    process.env.AUTH_TOKEN_SECRET,
     { expiresIn: "1h" }
   );
 };

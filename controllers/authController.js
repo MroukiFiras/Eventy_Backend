@@ -2,7 +2,14 @@ import authService from "../services/authService.js";
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, phone, password, confirmPassword } = req.body;
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "Passwords do not match.", state: false });
+    }
 
     // Call the service to create a new user
     const newUser = await authService.createUserService(
