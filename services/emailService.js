@@ -17,14 +17,14 @@ const sendEmail = async (to, { subject, message }) => {
     });
 
     const mailOptions = {
-      from: "Eventy App",
+      from: '"Eventy App" <example.gmail.com>',
       to,
       subject,
       html: message,
     };
 
     await smtpTransport.sendMail(mailOptions);
-    console.log(`Email sent to ${to}`);
+    // console.log(`Email sent to ${to}`);
   } catch (error) {
     console.error(`Failed to send email: ${error.message}`);
   }
