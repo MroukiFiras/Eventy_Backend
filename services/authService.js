@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
+import tokenUtils from "../utils/tokenUtils.js";
 
-// Function to create a new user
+// Register User Service
 const createUserService = async (name, email, password, phone) => {
   // Check if user with this email already exists
   const existingUser = await User.findOne({ email });
@@ -27,7 +28,7 @@ const createUserService = async (name, email, password, phone) => {
   return await user.save();
 };
 
-// User Login
+// Login User Service
 const loginUserService = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -41,7 +42,59 @@ const loginUserService = async (email, password) => {
   }
 };
 
+// Resend Verification Code using Email
+const resendVerificationCodeWithEmail = async (email) => {
+  const user = await User.findone({ email });
+  if (!user) throw new Error("User not found.");
+
+  // Generate a new verification token and update user data
+  const verificationToken = tokenUtils.generateVerificationCode();
+  user.tokenInfo = {
+    token: verificationToken,
+    tokenExpiration: Date.now() + 60000, // 1-min expiration
+  };
+
+  await user.save();
+  await emailService.sendVerificationEmail(user.email, verificationToken);
+  return { message: "Verification code resent. Please check your email." };
+};
+
+// Resend Verification Code using Authenticated User ID
+const resendVerificationCodeWithId = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found.");
+
+  // Generate a new verification token and update user data
+  const verificationToken = tokenUtils.generateVerificationCode();
+  user.tokenInfo = {
+    token: verificationToken,
+    tokenExpiration: Date.now() + 60000, // 1-min expiration
+  };
+
+  await user.save();
+  await emailService.sendVerificationEmail(user.email, verificationToken);
+  return { message: "Verification code resent. Please check your email." };
+};
+
+// Verify Token Service
+const verifyTokenService = async (email, token) => {
+  const user = await User.findOne({
+    email,
+    "tokenInfo.token": token,
+    "tokenInfo.tokenExpiration": { $gt: Date.now() },
+  });
+  if (!user) throw new Error("User not found or token expired.");
+  user.hasVerifiedEmail = true;
+  user.tokenInfo = undefined;
+  await user.save();
+
+  return user;
+};
+
 export default {
   createUserService,
   loginUserService,
+  resendVerificationCodeWithEmail,
+  resendVerificationCodeWithId,
+  verifyTokenService,
 };

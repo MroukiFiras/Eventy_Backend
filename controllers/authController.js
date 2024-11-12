@@ -1,39 +1,37 @@
 import authService from "../services/authService.js";
 import tokenUtils from "../utils/tokenUtils.js";
-import emailService from "../services/emailService.js"; 
+import emailService from "../services/emailService.js";
 
+// Create User Controller
 const createUser = async (req, res) => {
   try {
     const { name, email, phone, password, confirmPassword } = req.body;
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       return res
         .status(400)
         .json({ message: "Passwords do not match.", state: false });
     }
 
-    // Call the service to create a new user (without verifying email)
+    // Create user and generate verification token
     const newUser = await authService.createUserService(
       name,
       email,
       password,
       phone
     );
-
-    // Generate a verification token and send the verification email
     const verificationToken = tokenUtils.generateVerificationCode();
     await emailService.sendVerificationEmail(newUser.email, verificationToken);
 
-    // Save the verification token in the database
     newUser.tokenInfo = {
       token: verificationToken,
-      tokenExpiration: Date.now() + 3600000, // 1 hour expiration time
+      tokenExpiration: Date.now() + 1220000,
     };
     await newUser.save();
 
-    // Send response with a message to check email for verification
-    res.json({
+    // Generate temporary auth-token for the new user
+    const authToken = tokenUtils.generateAuthToken(newUser._id);
+    res.header("auth-token", authToken).json({
       message:
         "User created successfully. Please check your email to verify your account.",
       state: true,
@@ -44,6 +42,7 @@ const createUser = async (req, res) => {
   }
 };
 
+// Login User Controller
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -69,6 +68,49 @@ const loginUser = async (req, res) => {
   }
 };
 
+// Resend Verification Code Controller
+const resendVerificationCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userId = req.user ? req.user._id : null;
+
+    let response;
+    if (email) {
+      // Resend using email if provided
+      response = await authService.resendVerificationCodeWithEmail(email);
+    } else if (userId) {
+      // Resend using user ID if authenticated
+      response = await authService.resendVerificationCodeWithId(userId);
+    } else {
+      return res.status(400).json({
+        message: "No email or authentication provided",
+        state: false,
+      });
+    }
+    res.json({ message: response.message, state: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, state: false });
+  }
+};
+
+// Verify Token Controller
+const verifyToken = async (req, res) => {
+  // console.log("verifyToken controller called"); // Check if endpoint is reached
+  try {
+    const { email, token } = req.body;
+    // console.log(`Email: ${email}, Token: ${token}`); // Log request data
+
+    const user = await authService.verifyTokenService(email, token);
+    // console.log("User found and verified:", user); // Check if service worked
+
+    res.json({ message: "Email is verified", state: true });
+  } catch (err) {
+    console.error("Error in verifyToken:", err);
+    res.status(500).json({ message: err.message, state: false });
+  }
+};
+
+// Logout User Controller
 const logoutUser = (_, res) => {
   // Clear the auth-token header to log the user out
   res
@@ -79,5 +121,7 @@ const logoutUser = (_, res) => {
 export default {
   createUser,
   loginUser,
+  resendVerificationCode,
+  verifyToken,
   logoutUser,
 };

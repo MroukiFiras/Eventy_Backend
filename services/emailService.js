@@ -31,11 +31,10 @@ const sendEmail = async (to, { subject, message }) => {
 };
 
 // Sends a verification email with a generated token.
-const sendVerificationEmail = async (to) => {
-  const verificationCode = tokenUtils.generateVerificationCode();
+const sendVerificationEmail = async (to, verificationToken) => {
   const emailContent = {
     subject: "Eventy! Confirm your email address",
-    message: emailUtils.formatVerificationEmail(verificationCode),
+    message: emailUtils.formatVerificationEmail(verificationToken),
   };
   console.log(`Email sent to ${to}`);
   await sendEmail(to, emailContent);
