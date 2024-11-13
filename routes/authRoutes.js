@@ -1,6 +1,7 @@
 import express from "express";
 import authController from "../controllers/authController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
+import rateLimitMiddleware from "../middlewares/rateLimitMiddleware.js";
 const router = express.Router();
 
 // Route to create a new user
@@ -11,12 +12,32 @@ router.post("/login", authController.loginUser);
 
 // Route to resend verification code
 router.post(
-  "/resendVerification",
+  "/verification/resend",
   authMiddleware.authTokenCheck,
+  rateLimitMiddleware.rateLimit,
   authController.resendVerificationCode
 );
 
-router.post("/passwordReset", authController.requestPasswordReset);
+// Route to request password reset
+router.post(
+  "/passwordReset/request",
+  rateLimitMiddleware.rateLimit,
+  authController.requestPasswordReset
+);
+
+// Route to verify the password token
+router.post("/passwordReset/verify-token", authController.verifyPasswordResetToken);
+
+// Route to resend password reset token
+router.post(
+  "/password-reset/resend-token",
+  authMiddleware.authTokenCheck,
+  rateLimitMiddleware.rateLimit,
+  authController.resendPasswordResetToken
+);
+
+// Route to reset password 
+router.post("/passwordReset", authController.resetPassword);
 
 // Route to verify the email token
 router.post("/verify", authController.verifyToken);

@@ -110,9 +110,61 @@ const requestPasswordReset = async (req, res) => {
   }
 };
 
-const resendPasswordResetToken = async () => {};
+// Resend Password Reset Token
+const resendPasswordResetToken = async (req, res) => {
+  try {
+    const email = req.user.id;
+    const response = await authService.resendPasswordResetTokenService(email);
+    res.json({
+      message: response.message,
+      state: true,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-const verifyPasswordResetToken = async () => {};
+// Verify Password Reset Token
+const verifyPasswordResetToken = async (req, res) => {
+  try {
+    const { email, resetToken } = req.body;
+    const response = await authService.verifyPasswordResetTokenService(
+      email,
+      resetToken
+    );
+    res.json({
+      message: response.message,
+      state: true,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message, state: false });
+  }
+};
+
+// Password Reset
+const resetPassword = async (req, res) => {
+  try {
+    const { email, resetToken, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "Passwords do not match.", state: false });
+    }
+
+    const response = await authService.passwordResetService(
+      email,
+      resetToken,
+      newPassword
+    );
+    res.json({
+      message: response.message,
+      state: true,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message, state: false });
+  }
+};
 
 // Verify Token Controller
 const verifyToken = async (req, res) => {
@@ -146,6 +198,7 @@ export default {
   requestPasswordReset,
   resendPasswordResetToken,
   verifyPasswordResetToken,
+  resetPassword,
   verifyToken,
   logoutUser,
 };
