@@ -2,6 +2,8 @@ import authService from "../services/authService.js";
 import tokenUtils from "../utils/tokenUtils.js";
 import emailService from "../services/emailService.js";
 
+const verificationExpiration = process.env.VERIFICATION_TOKEN_EXPIRATION;
+
 // Create User Controller
 const createUser = async (req, res) => {
   try {
@@ -25,7 +27,7 @@ const createUser = async (req, res) => {
 
     newUser.tokenInfo = {
       token: verificationToken,
-      tokenExpiration: Date.now() + 1220000,
+      tokenExpiration: Date.now() + parseInt(verificationExpiration),
     };
     await newUser.save();
 
@@ -37,7 +39,7 @@ const createUser = async (req, res) => {
       state: true,
     });
   } catch (error) {
-    console.error(`User creation failed: ${error.message}`);
+    // console.error(`User creation failed: ${error.message}`);
     res.status(500).json({ message: error.message, state: false });
   }
 };
@@ -72,7 +74,8 @@ const loginUser = async (req, res) => {
 const resendVerificationCode = async (req, res) => {
   try {
     const { email } = req.body;
-    const userId = req.user ? req.user._id : null;
+    const userId = req.user ? req.user.id : null;
+    // console.log(req.user); // Log req.user to check its structure
 
     let response;
     if (email) {
@@ -93,6 +96,24 @@ const resendVerificationCode = async (req, res) => {
   }
 };
 
+// Request Password Reset
+const requestPasswordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const response = await authService.requestPasswordResetService(email);
+    res.json({
+      message: response.message,
+      state: true,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const resendPasswordResetToken = async () => {};
+
+const verifyPasswordResetToken = async () => {};
+
 // Verify Token Controller
 const verifyToken = async (req, res) => {
   // console.log("verifyToken controller called"); // Check if endpoint is reached
@@ -105,7 +126,7 @@ const verifyToken = async (req, res) => {
 
     res.json({ message: "Email is verified", state: true });
   } catch (err) {
-    console.error("Error in verifyToken:", err);
+    // console.error("Error in verifyToken:", err);
     res.status(500).json({ message: err.message, state: false });
   }
 };
@@ -122,6 +143,9 @@ export default {
   createUser,
   loginUser,
   resendVerificationCode,
+  requestPasswordReset,
+  resendPasswordResetToken,
+  verifyPasswordResetToken,
   verifyToken,
   logoutUser,
 };

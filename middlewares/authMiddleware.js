@@ -9,8 +9,8 @@ const isAuthenticated = (headers) => {
   if (!authToken) return null;
 
   try {
-    const verifyToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
-    return verifyToken; // If the token is valid, return the decoded token
+    const decodedToken = jwt.verify(authToken, process.env.AUTH_TOKEN_SECRET);
+    return decodedToken; // If the token is valid, return the decoded token
   } catch (err) {
     console.error(`Authentication Error: ${err.message}`);
     return null;
@@ -19,12 +19,15 @@ const isAuthenticated = (headers) => {
 
 // Middleware to check if the request contains a valid Authorization token.
 const authTokenCheck = (req, res, next) => {
-  if (isAuthenticated(req.headers)) {
-    next();
+  const decodedToken = isAuthenticated(req.headers); // Get decoded token
+  if (decodedToken) {
+    req.user = decodedToken; // Attach the decoded token (user info) to the request object
+    next(); // Proceed to the next middleware/controller
   } else {
     res.status(400).json({ message: "Invalid Token", state: false });
   }
 };
+
 
 // Middleware to authenticate the user and update their block status if applicable.
 const checkUser = async (req, res, next) => {
