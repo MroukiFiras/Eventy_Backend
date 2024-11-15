@@ -19,24 +19,23 @@ router.post(
 );
 
 // Route to request password reset
-router.post(
-  "/passwordReset/request",
-  rateLimitMiddleware.rateLimit,
-  authController.requestPasswordReset
-);
+router.post("/passwordReset/request", authController.requestPasswordReset);
 
 // Route to verify the password token
-router.post("/passwordReset/verify-token", authController.verifyPasswordResetToken);
+router.post(
+  "/passwordReset/verifyToken",
+  authController.verifyPasswordResetToken
+);
 
 // Route to resend password reset token
 router.post(
-  "/password-reset/resend-token",
+  "/passwordReset/resendToken",
   authMiddleware.authTokenCheck,
   rateLimitMiddleware.rateLimit,
   authController.resendPasswordResetToken
 );
 
-// Route to reset password 
+// Route to reset password
 router.post("/passwordReset", authController.resetPassword);
 
 // Route to verify the email token

@@ -6,6 +6,7 @@ import connectDatabase from "./config/dbConnection.js";
 import connectCloudinary from "./config/cloudinaryConnection.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import adminCategoryRoutes from "./routes/adminCategoryRoutes.js";
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ connectCloudinary();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/admin/categories", adminCategoryRoutes);
+app.use("/api/admin/centersOfInterest", adminCenterOfInterestRoutes);
 
 // 404 error handler
 app.use((req, res) => {
