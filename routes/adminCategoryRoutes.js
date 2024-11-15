@@ -11,9 +11,9 @@ router.post("/create", adminCategoryController.createCategory);
 router.get("/", adminCategoryController.getAllCategories);
 
 // Update category route (admin only)
-router.put("/:id", adminCategoryController.updateCategory);
+router.put("/:categoryId", adminCategoryController.updateCategory);
 
 // Delete category route (admin only)
-router.delete("/:id", adminCategoryController.deleteCategory);
+router.delete("/:categoryId", adminCategoryController.deleteCategory);
 
 export default router;

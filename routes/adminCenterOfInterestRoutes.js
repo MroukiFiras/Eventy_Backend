@@ -11,7 +11,15 @@ router.post("/create", adminCenterOfInterestController.createCenterOfInterest);
 router.get("/", adminCenterOfInterestController.getAllCenters);
 
 // Update center of interest route (admin only)
-router.put("/:id", adminCenterOfInterestController.updateCenterOfInterest);
+router.put(
+  "/:centerId",
+  adminCenterOfInterestController.updateCenterOfInterest
+);
 
 // Delete center of interest (admin only)
-router.delete("/:id", adminCenterOfInterestController.deleteCenterOfInterest);
+router.delete(
+  "/:centerId",
+  adminCenterOfInterestController.deleteCenterOfInterest
+);
+
+export default router;

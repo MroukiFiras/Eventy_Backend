@@ -41,7 +41,7 @@ const deleteCategoryService = async (categoryId) => {
   const category = await Category.findById(categoryId);
   if (!category) throw new Error("Category not found.");
 
-  await category.remove();
+  await category.deleteOne();
   return { message: "Category deleted successfully." };
 };
 

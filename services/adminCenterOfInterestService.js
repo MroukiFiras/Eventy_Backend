@@ -42,7 +42,7 @@ const deleteCenterOfInterestService = async (centerId) => {
   const center = await CenterOfInterest.findById(centerId);
   if (!center) throw new Error("Center of Interest not found.");
 
-  await center.remove();
+  await center.deleteOne();
   return { message: "Center of Interest deleted successfully." };
 };
 

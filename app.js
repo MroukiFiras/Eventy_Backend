@@ -29,7 +29,7 @@ connectCloudinary();
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/admin/categories", adminCategoryRoutes);
-app.use("/api/admin/centersOfInterest", adminCenterOfInterestRoutes);
+app.use("/api/admin/centers", adminCenterOfInterestRoutes);
 
 // 404 error handler
 app.use((req, res) => {
