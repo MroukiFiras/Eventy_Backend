@@ -7,6 +7,7 @@ import connectCloudinary from "./config/cloudinaryConnection.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminCategoryRoutes from "./routes/adminCategoryRoutes.js";
+import adminCenterOfInterestRoutes from "./routes/adminCenterOfInterestRoutes.js";
 
 dotenv.config();
 
