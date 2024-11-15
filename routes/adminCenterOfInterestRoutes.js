@@ -5,20 +5,30 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Create center of interest route (admin only)
-router.post("/create", adminCenterOfInterestController.createCenterOfInterest);
+router.post(
+  "/create",
+  authMiddleware.isAdmin,
+  adminCenterOfInterestController.createCenterOfInterest
+);
 
 // Get all centers of interest route (admin only)
-router.get("/", adminCenterOfInterestController.getAllCenters);
+router.get(
+  "/",
+  authMiddleware.isAdmin,
+  adminCenterOfInterestController.getAllCenters
+);
 
 // Update center of interest route (admin only)
 router.put(
   "/:centerId",
+  authMiddleware.isAdmin,
   adminCenterOfInterestController.updateCenterOfInterest
 );
 
 // Delete center of interest (admin only)
 router.delete(
   "/:centerId",
+  authMiddleware.isAdmin,
   adminCenterOfInterestController.deleteCenterOfInterest
 );
 

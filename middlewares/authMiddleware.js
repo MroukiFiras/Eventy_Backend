@@ -28,15 +28,14 @@ const authTokenCheck = (req, res, next) => {
   }
 };
 
-
 // Middleware to authenticate the user and update their block status if applicable.
 const checkUser = async (req, res, next) => {
-  const token = isAuthenticated(req.headers);
+  const decodedToken = isAuthenticated(req.headers);
 
-  if (token) {
+  if (decodedToken) {
     try {
-      // Make sure token contains user ID (e.g., token.id), and verify user exists
-      const user = await User.findById(token.id); // Assumes `id` is in the token payload
+      // Make sure token contains user ID (e.g., decodedToken.id), and verify user exists
+      const user = await User.findById(decodedToken.id); // Assumes `id` is in the token payload
       if (user) {
         // Check and update block status
         user.blockStatus = checkBlockState(user.blockStatus);
@@ -46,7 +45,7 @@ const checkUser = async (req, res, next) => {
         next();
       } else {
         res
-          .status(400)
+          .status(404)
           .json({ message: "User not found or invalid token", state: false });
       }
     } catch (err) {
@@ -54,7 +53,31 @@ const checkUser = async (req, res, next) => {
       res.status(500).json({ message: "Internal Server Error", state: false });
     }
   } else {
-    res.status(400).json({ message: "Invalid Token", state: false });
+    res.status(401).json({ message: "Invalid or missing token", state: false });
+  }
+};
+
+// Middleware to check if the user has admin privileges
+const isAdmin = async (req, res, next) => {
+  const decodedToken = isAuthenticated(req.headers);
+
+  if (decodedToken) {
+    try {
+      const user = await User.findById(decodedToken.id);
+      if (user && user.userRole && user.userRole.admin) {
+        next(); // Proceed if the user is an admin
+      } else {
+        res.status(403).json({
+          message: "Access denied: Admin privileges required",
+          state: false,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching user:", err);
+      res.status(500).json({ message: "Internal Server Error", state: false });
+    }
+  } else {
+    res.status(401).json({ message: "Invalid or missing token", state: false });
   }
 };
 
@@ -69,4 +92,4 @@ const checkBlockState = (status) => {
   return status;
 };
 
-export default { authTokenCheck, checkUser };
+export default { authTokenCheck, isAdmin, checkUser };

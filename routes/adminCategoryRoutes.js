@@ -5,15 +5,31 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // Create category route (admin only)
-router.post("/create", adminCategoryController.createCategory);
+router.post(
+  "/create",
+  authMiddleware.isAdmin,
+  adminCategoryController.createCategory
+);
 
 // Get all categories route (admin only)
-router.get("/", adminCategoryController.getAllCategories);
+router.get(
+  "/",
+  authMiddleware.isAdmin,
+  adminCategoryController.getAllCategories
+);
 
 // Update category route (admin only)
-router.put("/:categoryId", adminCategoryController.updateCategory);
+router.put(
+  "/:categoryId",
+  authMiddleware.isAdmin,
+  adminCategoryController.updateCategory
+);
 
 // Delete category route (admin only)
-router.delete("/:categoryId", adminCategoryController.deleteCategory);
+router.delete(
+  "/:categoryId",
+  authMiddleware.isAdmin,
+  adminCategoryController.deleteCategory
+);
 
 export default router;

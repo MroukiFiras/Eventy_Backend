@@ -1,10 +1,17 @@
 import jwt from "jsonwebtoken";
 
 // Function to generate JWT token
-const generateAuthToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.AUTH_TOKEN_SECRET, {
-    expiresIn: "1h",
-  });
+const generateAuthToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      role: user.userRole,
+    },
+    process.env.AUTH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.JWT_TOKEN_EXPIRATION,
+    }
+  );
 };
 
 // Generates a 6-digit numeric verification code.

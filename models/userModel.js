@@ -39,8 +39,9 @@ const userSchema = new mongoose.Schema(
       tokenExpiration: { type: Date },
     },
     userRole: {
-      user: { type: Boolean, default: true },
-      admin: { type: Boolean, default: false },
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     blockStatus: {
       isBlocked: { type: Boolean, default: false },
