@@ -4,23 +4,29 @@ import image from "../services/imageService.js";
 
 const router = express.Router();
 
-// Create Event
+// Get event by name
+router.get("/search", eventController.searchEventsByName);
+
+// Get Events by Category
+router.get("/category/:categoryId", eventController.getEventsByCategory);
+
+// Create event
 router.post("/createEvent", image.upload("image"), eventController.createEvent);
 
-// Update Event
+// Update event
 router.put(
   "/updateEvent/:eventId",
   image.upload("image"),
   eventController.updateEvent
 );
 
-// Get All Events
+// Get ell events
 router.get("/allEvents", eventController.getAllEvents);
 
-// Get Event by ID
+// Get event by id
 router.get("/:eventId", eventController.getEventById);
 
-// Delete Event
-router.delete("/delete/:eventId", eventController.deleteEvent);
+// Delete event
+router.delete("/deleteEvent/:eventId", eventController.deleteEvent);
 
 export default router;
