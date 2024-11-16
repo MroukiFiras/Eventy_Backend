@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema(
       isBlocked: { type: Boolean, default: false },
       blockedUntil: { type: Date, default: null },
     },
+    centerOfInterest: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CenterOfInterest", 
+      },
+    ],
   },
   {
     timestamps: true,

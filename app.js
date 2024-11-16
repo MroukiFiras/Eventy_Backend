@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminCategoryRoutes from "./routes/adminCategoryRoutes.js";
 import adminCenterOfInterestRoutes from "./routes/adminCenterOfInterestRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/admin/categories", adminCategoryRoutes);
 app.use("/api/admin/centers", adminCenterOfInterestRoutes);
+app.use("/api/event", eventRoutes);
 
 // 404 error handler
 app.use((req, res) => {
