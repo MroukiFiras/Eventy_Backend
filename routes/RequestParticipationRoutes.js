@@ -1,24 +1,30 @@
 import express from "express";
-import RequestParticipationController from "../controllers/RequestParticipationController.js";
+import requestParticipationController from "../controllers/requestParticipationController.js";
 
 const router = express.Router();
 
 // Send a participation request route
-router.post("/sendRequest/:eventId", RequestParticipationController.sendRequest);
+router.post(
+  "/sendRequest/:eventId",
+  requestParticipationController.sendRequest
+);
 
 // Get all the participation request route
 router.get(
   "/allRequestes/:eventId",
-  RequestParticipationController.GetAllRequestes
+  requestParticipationController.GetAllRequestes
 );
 
 // Cancel the the participation request route
-router.delete("/cancelRequest/:requestId", RequestParticipationController.CancelRequest);
+router.delete(
+  "/cancelRequest/:requestId",
+  requestParticipationController.CancelRequest
+);
 
 // Handle the request approval or rejection route
 router.patch(
   "/handleRequest/:requestId",
-  RequestParticipationController.handleRequestApproval
+  requestParticipationController.handleRequestApproval
 );
 
 export default router;

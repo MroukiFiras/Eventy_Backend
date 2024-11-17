@@ -1,9 +1,9 @@
-import RequestParticipation from "../models/RequestParticipationModel.js";
+import requestParticipation from "../models/requestParticipationModel.js";
 import eventService from "./eventService.js";
 
 // Sending participation request service
 const sendRequestService = async (userId, eventId) => {
-  const existingRequest = await RequestParticipation.findOne({
+  const existingRequest = await requestParticipation.findOne({
     user: userId,
     event: eventId,
     status: "pending",
@@ -13,7 +13,7 @@ const sendRequestService = async (userId, eventId) => {
     throw new Error("You have already requested to join this event");
   }
 
-  const request = await RequestParticipation.create({
+  const request = await requestParticipation.create({
     user: userId,
     event: eventId,
     status: "pending",
@@ -24,7 +24,8 @@ const sendRequestService = async (userId, eventId) => {
 
 // Fetch all requests service
 const GetAllRequestesService = async (eventId) => {
-  const requests = await RequestParticipation.find({ event: eventId })
+  const requests = await requestParticipation
+    .find({ event: eventId })
     .populate("user")
     .populate("event");
   return requests;
@@ -33,7 +34,7 @@ const GetAllRequestesService = async (eventId) => {
 // Service method to cancel a user's participation request
 const CancelRequestService = async (requestId) => {
   // Find the request by its ID
-  const request = await RequestParticipation.findById(requestId);
+  const request = await requestParticipation.findById(requestId);
 
   if (!request) {
     throw new Error("Request not found");
@@ -53,9 +54,9 @@ const CancelRequestService = async (requestId) => {
 // Handle approval or rejection of participation request service
 const handleRequestApprovalService = async (requestId, status) => {
   // Fetch the participation request
-  const request = await RequestParticipation.findById(requestId).populate(
-    "event user"
-  );
+  const request = await requestParticipation
+    .findById(requestId)
+    .populate("event user");
 
   const event = request.event;
 
