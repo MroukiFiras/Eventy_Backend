@@ -44,6 +44,12 @@ const loginUserService = async (email, password) => {
   if (!passwordCheck) {
     throw new Error("Invalid email or password.");
   }
+  const authToken = tokenUtils.generateAuthToken(user);
+  return {
+    message: "Login successful",
+    authToken,
+    user,
+  };
 };
 
 // Resend Verification Code using Email

@@ -1,4 +1,5 @@
 import Event from "../models/eventModel.js";
+import User from "../models/userModel.js";
 import imageService from "./imageService.js";
 
 // Handle event creation service
@@ -14,9 +15,11 @@ const createEventService = async (eventData, imageFile) => {
     centerOfInterest,
   } = eventData;
 
-  // Upload the event profile image if provided
-  let eventProfileImageUrl = await uploadEventProfileImage(imageFile);
+  let eventProfileImageUrl = imageFile
+    ? await uploadEventProfileImage(imageFile)
+    : null;
 
+  // Create a new event
   const newEvent = new Event({
     title,
     description,
@@ -30,6 +33,13 @@ const createEventService = async (eventData, imageFile) => {
   });
 
   await newEvent.save();
+  const user = await User.findById(createdBy);
+  if (!user) {
+    throw new Error("User not found.");
+  }
+  user.organizedEvents.push(newEvent._id);
+  await user.save();
+
   return newEvent;
 };
 
@@ -62,10 +72,42 @@ const getEventByIdService = async (eventId) => {
   return event;
 };
 
-// Delete Event Service
-const deleteEventService = async (eventId) => {
-  const event = await Event.findByIdAndDelete(eventId);
+// Get All Events Organized by a User
+const getAllOrganizedEventsService = async (userId) => {
+  const events = await Event.find({ createdBy: userId }).sort({
+    createdAt: -1,
+  });
+  return events;
+};
+
+// Get the User who Organized a Specific Event
+const getEventOrganizerService = async (eventId) => {
+  const event = await Event.findById(eventId);
   if (!event) throw new Error("Event not found");
+
+  const user = await User.findById(event.createdBy);
+  if (!user) throw new Error("User not found");
+
+  return user;
+};
+
+const deleteEventService = async (eventId, userId) => {
+  const event = await Event.findById(eventId);
+  if (!event) throw new Error("Event not found");
+
+  if (event.createdBy.toString() !== userId) {
+    throw new Error("You are not authorized to delete this event.");
+  }
+
+  const user = await User.findById(userId);
+  if (user) {
+    user.organizedEvents = user.organizedEvents.filter(
+      (eventObj) => eventObj.toString() !== eventId
+    );
+    await user.save();
+  }
+  await event.deleteOne();
+
   return event;
 };
 
@@ -100,7 +142,7 @@ const uploadEventProfileImage = async (imageFile) => {
   return uploadedImageUrl;
 };
 
-// Event service method to check max participants
+// Check max participants service
 const checkMaxParticipants = async (eventId) => {
   const event = await Event.findById(eventId);
   return event.participants.length >= event.maxParticipants;
@@ -111,6 +153,8 @@ export default {
   updateEventService,
   getAllEventsService,
   getEventByIdService,
+  getAllOrganizedEventsService,
+  getEventOrganizerService,
   deleteEventService,
   searchEventsByNameService,
   getEventsByCategoryService,

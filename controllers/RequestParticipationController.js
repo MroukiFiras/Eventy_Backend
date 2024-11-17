@@ -1,12 +1,12 @@
-import requestParticipationService from "../services/requestParticipationService.js";
+import RequestParticipationService from "../services/RequestParticipationService.js";
 
 // Sending participation request
 const sendRequest = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { userId } = req.body;
+    const { id: userId } = req.user; // Correctly extract userId from req.user
 
-    const request = await requestParticipationService.sendRequestService(
+    const request = await RequestParticipationService.sendRequestService(
       userId,
       eventId
     );
@@ -27,7 +27,7 @@ const GetAllRequestes = async (req, res) => {
   try {
     const { eventId } = req.params;
 
-    const requests = await requestParticipationService.GetAllRequestesService(
+    const requests = await RequestParticipationService.GetAllRequestesService(
       eventId
     );
     return res
@@ -44,7 +44,7 @@ const CancelRequest = async (req, res) => {
     const { requestId } = req.params; // Get requestId from the URL params
 
     // Call the service to cancel (delete) the request
-    const response = await requestParticipationService.CancelRequestService(
+    const response = await RequestParticipationService.CancelRequestService(
       requestId
     );
 
@@ -69,7 +69,7 @@ const handleRequestApproval = async (req, res) => {
 
     // Call the service to handle the approval/rejection
     const request =
-      await requestParticipationService.handleRequestApprovalService(
+      await RequestParticipationService.handleRequestApprovalService(
         requestId,
         status
       );

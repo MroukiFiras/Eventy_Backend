@@ -50,7 +50,21 @@ const userSchema = new mongoose.Schema(
     centerOfInterest: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "CenterOfInterest", 
+        ref: "CenterOfInterest",
+      },
+    ],
+    
+    organizedEvents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event", 
+      },
+    ],
+    
+    participatedEvents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Participation", 
       },
     ],
   },

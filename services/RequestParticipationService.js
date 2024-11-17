@@ -1,5 +1,7 @@
 import requestParticipation from "../models/requestParticipationModel.js";
 import eventService from "./eventService.js";
+import Participation from "../models/participationModel.js";
+
 
 // Sending participation request service
 const sendRequestService = async (userId, eventId) => {
@@ -46,7 +48,7 @@ const CancelRequestService = async (requestId) => {
   }
 
   // Delete the request from the database
-  await RequestParticipation.findByIdAndDelete(requestId);
+  await requestParticipation.findByIdAndDelete(requestId);
 
   return { message: "Request has been deleted successfully" };
 };
@@ -62,7 +64,6 @@ const handleRequestApprovalService = async (requestId, status) => {
 
   // Check if max participants limit has been reached
   const isFull = await eventService.checkMaxParticipants(event._id);
-
   if (status === "approved" && isFull) {
     throw new Error(
       "Cannot approve request: Maximum participants limit reached"
@@ -74,12 +75,35 @@ const handleRequestApprovalService = async (requestId, status) => {
   await request.save();
 
   if (status === "approved") {
-    event.participants.push(request.user);
+    // Create the participation record
+    const participation = await Participation.create({
+      user: request.user._id,
+      event: request.event._id,
+      status: "approved",
+    });
+
+    // Add the user to the event's participants list
+    event.participants.push(participation._id);
     await event.save();
+
+    // Add the participation to the user's participatedEvents array
+    const user = request.user;
+    user.participatedEvents.push(participation._id);
+    await user.save();
+
+    // Delete the request from the requestParticipation collection
+    await requestParticipation.findByIdAndDelete(requestId);
+
+    return { message: "Request approved", participation };
   }
 
-  return request;
+  if (status === "rejected") {
+    // If the request is rejected, just delete the request
+    await requestParticipation.findByIdAndDelete(requestId);
+    return { message: "Request rejected and removed from records" };
+  }
 };
+
 
 export default {
   sendRequestService,

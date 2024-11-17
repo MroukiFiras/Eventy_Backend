@@ -49,19 +49,22 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Call the service to login user
+    // Call the service to handle login
     const response = await authService.loginUserService(email, password);
 
-    // Send the response
-    res.header("auth-token", response.authToken).json({
-      message: response.message,
-      user: {
-        id: response.user._id,
-        name: response.user.name,
-        email: response.user.email,
-      },
-      state: true,
-    });
+    // Send the response, including the token in headers and user details in body
+    res
+      .header("auth-token", response.authToken)
+      .status(200)
+      .json({
+        message: response.message,
+        user: {
+          id: response.user._id,
+          name: response.user.name,
+          email: response.user.email,
+        },
+        state: true,
+      });
   } catch (err) {
     res.status(400).json({
       message: err.message,

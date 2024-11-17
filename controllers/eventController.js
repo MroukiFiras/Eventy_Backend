@@ -4,19 +4,18 @@ import mongoose from "mongoose";
 // Handle the creation of a new event
 const createEvent = async (req, res) => {
   try {
-    // Extract event data from the request body
-    const eventData = req.body;
+    const eventData = {
+      ...req.body,
+      createdBy: req.user.id,
+    };
 
-    // If there's an image file, it will be uploaded, otherwise, we just skip it
     const imageFile = req.file ? req.file : null;
 
-    // Call the event service to create the event and upload the image (if any)
     const newEvent = await eventService.createEventService(
       eventData,
       imageFile
     );
 
-    // Return the newly created event in the response
     return res.status(201).json({
       message: "Event created successfully",
       eventId: newEvent._id,
@@ -84,11 +83,48 @@ const getEventById = async (req, res) => {
   }
 };
 
-// Delete Event
+// Get All Events Organized by the Logged-In User
+const getAllOrganizedEvents = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get the logged-in user's ID
+    const events = await eventService.getAllOrganizedEventsService(userId);
+
+    return res.status(200).json(events);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error fetching organized events",
+      error: error.message || error,
+    });
+  }
+};
+
+// Get the Organizer of a Specific Event
+const getEventOrganizer = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const user = await eventService.getEventOrganizerService(eventId);
+
+    return res.status(200).json({
+      message: "Organizer found",
+      organizer: user,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error fetching event organizer",
+      error: error.message || error,
+    });
+  }
+};
+
+// Delete event
 const deleteEvent = async (req, res) => {
   try {
     const eventId = req.params.eventId;
-    const deletedEvent = await eventService.deleteEventService(eventId);
+    const userId = req.user.id;
+
+    const deletedEvent = await eventService.deleteEventService(eventId, userId);
 
     return res.status(200).json({
       message: "Event deleted successfully",
@@ -168,6 +204,8 @@ export default {
   updateEvent,
   getAllEvents,
   getEventById,
+  getAllOrganizedEvents,
+  getEventOrganizer,
   deleteEvent,
   searchEventsByName,
   getEventsByCategory,

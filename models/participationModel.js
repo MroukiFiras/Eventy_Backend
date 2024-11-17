@@ -12,7 +12,7 @@ const participationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["approved", "rejected"],
+      enum: ["approved", "rejected", "canceled"],
       default: "approved",
     },
     isCheckedIn: {
@@ -21,7 +21,7 @@ const participationSchema = new mongoose.Schema(
     },
     checkInToken: {
       type: String,
-      unique: true,
+      default: false,
     },
     checkInTime: {
       type: Date,
