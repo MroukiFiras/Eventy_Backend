@@ -7,10 +7,10 @@ const router = express.Router();
 // Get all participations route
 router.get("/all", participationController.getAllParticipations);
 
-// Get a participation by ID
+// Get a participation by ID route
 router.get("/:participationId", participationController.getParticipationById);
 
-//
+// Delete a participation route
 router.delete(
   "/cancel/:participationId",
   authMiddleware.authTokenCheck,
