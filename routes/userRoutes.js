@@ -13,4 +13,12 @@ router.post(
   userController.uploadProfileImage
 );
 
+// Update user profile route
+router.put(
+  "/editProfile",
+  authMiddleware.checkUser,
+  image.upload("image"),
+  userController.editUserProfile
+);
+
 export default router;

@@ -19,10 +19,6 @@ router.delete(
   RequestParticipationController.CancelRequest
 );
 
-// Handle the request approval or rejection route
-router.patch(
-  "/handle/:requestId",
-  RequestParticipationController.handleRequestApproval
-);
+
 
 export default router;
