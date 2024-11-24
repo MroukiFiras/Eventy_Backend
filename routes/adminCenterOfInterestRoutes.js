@@ -11,6 +11,14 @@ router.post(
   adminCenterOfInterestController.createCenterOfInterest
 );
 
+
+//  Get all centers of interest route (accessible to all authenticated users)
+router.get(
+  "/public/all",
+  authMiddleware.authTokenCheck,
+  adminCenterOfInterestController.getAllCenters
+); 
+
 // Get all centers of interest route (admin only)
 router.get(
   "/",

@@ -37,13 +37,11 @@ const eventSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  categories: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-  ],
+  category: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true,
+  },
   centerOfInterest: [
     {
       type: mongoose.Schema.Types.ObjectId,

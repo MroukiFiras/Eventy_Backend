@@ -11,7 +11,7 @@ const createEventService = async (eventData, imageFile) => {
     createdBy,
     location,
     maxParticipants,
-    categories,
+    category,
     centerOfInterest,
   } = eventData;
 
@@ -28,7 +28,7 @@ const createEventService = async (eventData, imageFile) => {
     eventProfile: eventProfileImageUrl,
     location,
     maxParticipants,
-    categories,
+    category,
     centerOfInterest,
   });
 

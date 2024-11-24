@@ -20,7 +20,13 @@ const app = express();
 
 // Middleware
 app.use(morgan("dev"));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:4200", // Angular app
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

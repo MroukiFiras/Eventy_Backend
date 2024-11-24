@@ -11,14 +11,21 @@ router.post(
   adminCategoryController.createCategory
 );
 
+// Get all categories route (accessible to all authenticated users)
+router.get(
+  "/public/all",
+  authMiddleware.authTokenCheck,
+  adminCategoryController.getAllCategories
+);
+
 // Get all categories route (admin only)
 router.get(
-  "/",
+  "/all",
   authMiddleware.isAdmin,
   adminCategoryController.getAllCategories
 );
 
-// Update category route (admin only)
+// Update category route
 router.put(
   "/:categoryId",
   authMiddleware.isAdmin,
