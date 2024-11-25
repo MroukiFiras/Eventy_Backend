@@ -1,5 +1,28 @@
 import userService from "../services/userService.js";
 
+const getUserByEmail = async (req, res) => {
+  const { email } = req.query;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    const user = await getUserByEmailService(email);
+
+    // Remove sensitive fields before sending the response
+    const userWithoutPassword = {
+      ...user.toObject(),
+      password: undefined,
+      tokenInfo: undefined,
+    };
+
+    return res.status(200).json({ success: true, data: userWithoutPassword });
+  } catch (error) {
+    return res.status(404).json({ success: false, error: error.message });
+  }
+};
+
 const uploadProfileImage = async (req, res) => {
   // console.log(req.file); // Log file to debug
   try {
@@ -42,6 +65,7 @@ const editUserProfile = async (req, res) => {
 };
 
 export default {
+  getUserByEmail,
   uploadProfileImage,
   editUserProfile,
 };

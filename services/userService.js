@@ -1,6 +1,18 @@
 import Image from "./imageService.js";
 import User from "../models/userModel.js";
 
+const getUserByEmailService = async (email) => {
+  const user = await User.findOne({ email }).populate(
+    "centerOfInterest",
+    "name"
+  );
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
+
 const uploadProfileImageService = async (user, file) => {
   const url = await Image.uploadImage(file.path, {
     rootFolder: "users",
@@ -18,13 +30,7 @@ const editUserProfileService = async (userId, updates, file) => {
     throw new Error("User not found");
   }
 
-  const allowedFields = [
-    "name",
-    "phone",
-    "address",
-    "gender",
-    "centerOfInterest",
-  ];
+  const allowedFields = ["name", "phone", "gender", "centerOfInterest"];
   allowedFields.forEach((field) => {
     if (updates[field] !== undefined) {
       user[field] = updates[field];
@@ -46,6 +52,7 @@ const editUserProfileService = async (userId, updates, file) => {
 };
 
 export default {
+  getUserByEmailService,
   uploadProfileImageService,
   editUserProfileService,
 };

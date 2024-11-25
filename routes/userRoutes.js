@@ -5,6 +5,8 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+router.get("/getUserByEmail", userController.getUserByEmail);
+
 // Upload Image route
 router.post(
   "/uploadProfileImage",
