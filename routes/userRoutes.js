@@ -5,6 +5,9 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+// Get user by ID route
+router.get("/getUserById/:id", userController.getUserById);
+
 //
 router.get("/getUserByEmail", userController.getUserByEmail);
 

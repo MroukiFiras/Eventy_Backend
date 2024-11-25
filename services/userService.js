@@ -1,6 +1,15 @@
 import Image from "./imageService.js";
 import User from "../models/userModel.js";
 
+
+const getUserByIdService = async (userId) => {
+  const user = await User.findById(userId).populate("centerOfInterest", "name");
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
+
 const getUserByEmailService = async (email) => {
   const user = await User.findOne({ email }).populate(
     "centerOfInterest",
@@ -51,6 +60,7 @@ const editUserProfileService = async (userId, updates, file) => {
 };
 
 export default {
+  getUserByIdService,
   getUserByEmailService,
   uploadProfileImageService,
   editUserProfileService,

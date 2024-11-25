@@ -1,5 +1,15 @@
 import userService from "../services/userService.js";
 
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await userService.getUserByIdService(id);
+    res.status(200).json({ state: true, message: "User data retrieved", user });
+  } catch (error) {
+    res.status(404).json({ state: false, message: error.message });
+  }
+};
+
 const getUserByEmail = async (req, res) => {
   const { email } = req.query;
   if (!email) {
@@ -64,6 +74,7 @@ const editUserProfile = async (req, res) => {
 };
 
 export default {
+  getUserById,
   getUserByEmail,
   uploadProfileImage,
   editUserProfile,

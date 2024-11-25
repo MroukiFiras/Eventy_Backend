@@ -5,72 +5,65 @@ import User from "../models/userModel.js";
 import emailService from "./emailService.js";
 import QRCode from "qrcode";
 
-// Approve or reject participation
-const statusParticipationService = async (requestParticipationId, status) => {
-  // Fetch the requestParticipation entry
-  const request = await RequestParticipation.findById(
-    requestParticipationId
-  ).populate("user event");
+// Approve Participation service
+const approveParticipationService = async (requestParticipationId) => {
+  const request = await RequestParticipation.findById(requestParticipationId).populate("user event");
 
-  if (!request) {
-    throw new Error("Participation request not found.");
-  }
-
+  if (!request) throw new Error("Participation request not found.");
   const { user, event } = request;
 
-  if (status === "approved") {
-    // Generate a QR code for event check-in
-    const qrCodeData = `${user._id}-${event._id}-${new Date().getTime()}`;
-    const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+  // Generate a QR code for event check-in
+  const qrCodeData = `${user._id}-${event._id}-${new Date().getTime()}`;
+  const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+  console.log(qrCodeUrl)
+  // Create Participation record
+  const participation = await Participation.create({
+    user: user._id,
+    event: event._id,
+    status: "approved",
+    checkInToken: qrCodeData,
+  });
 
-    // Create a new Participation record
-    const participation = await Participation.create({
-      user: user._id,
-      event: event._id,
-      status: "approved",
-      checkInToken: qrCodeData,
-    });
-
-    // Save to user's participatedEvents
-    const userData = await User.findById(user._id);
-    if (!userData.participatedEvents.includes(participation._id)) {
-      userData.participatedEvents.push(participation._id);
-      await userData.save();
-    }
-
-    // Save to event's participants
-    const eventData = await Event.findById(event._id);
-    if (!eventData.participants.includes(participation._id)) {
-      eventData.participants.push(participation._id);
-      await eventData.save();
-    }
-
-    // Send approval email with QR code
-    await emailService.sendParticipationEmail(
-      user,
-      event,
-      qrCodeUrl,
-      "approved"
-    );
-
-    // Delete the requestParticipation entry
-    await RequestParticipation.deleteOne({ _id: requestParticipationId });
-
-    return participation;
-  } else if (status === "rejected") {
-    // Send rejection email
-    await emailService.sendParticipationEmail(user, event, null, "rejected");
-
-    // Delete the requestParticipation entry
-    await RequestParticipation.deleteOne({ _id: requestParticipationId });
-
-    return {
-      message: `Participation request for event ${event.title} was rejected.`,
-      status: "rejected",
-    };
-  } else {
-    throw new Error("Invalid status provided.");
+  // Save to user's participatedEvents
+  const userData = await User.findById(user._id);
+  if (!userData.participatedEvents.includes(participation._id)) {
+    userData.participatedEvents.push(participation._id);
+    await userData.save();
   }
+
+  // Save to event's participants
+  const eventData = await Event.findById(event._id);
+  if (!eventData.participants.includes(participation._id)) {
+    eventData.participants.push(participation._id);
+    await eventData.save();
+  }
+
+  // Send approval email
+  await emailService.sendParticipationEmail(user, event, qrCodeUrl, "approved");
+
+  // Remove requestParticipation entry
+  await RequestParticipation.deleteOne({ _id: requestParticipationId });
+
+  return participation;
+};
+
+// Reject Participation service
+const rejectParticipationService = async (requestParticipationId) => {
+  const request = await RequestParticipation.findById(requestParticipationId).populate("user event");
+
+  if (!request) throw new Error("Participation request not found.");
+  const { user, event } = request;
+
+  // Send rejection email
+  await emailService.sendParticipationEmail(user, event, null, "rejected");
+
+  // Remove requestParticipation entry
+  await RequestParticipation.deleteOne({ _id: requestParticipationId });
+
+  return {
+    message: `Participation request for event ${event.title} was rejected.`,
+    status: "rejected",
+  };
 };
 
 // Get all participations service
@@ -113,7 +106,8 @@ const cancelParticipationService = async (participationId, userId) => {
 };
 
 export default {
-  statusParticipationService,
+  approveParticipationService,
+  rejectParticipationService,
   getAllParticipationsService,
   getParticipationByIdService,
   cancelParticipationService,

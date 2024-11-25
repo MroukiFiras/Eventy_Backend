@@ -65,7 +65,7 @@ const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
     };
   }
 
-  await sendEmail(user.email, emailContent.subject, emailContent.message);
+  await sendEmail(user.email, emailContent);
 };
 
 export default {

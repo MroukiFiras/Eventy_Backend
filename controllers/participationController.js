@@ -6,6 +6,7 @@ const statusParticipation = async (req, res) => {
   try {
     const { requestParticipationId } = req.params;
     const { status } = req.body;
+    const userId = req.user.id; // Extracted from token by middleware
 
     if (!["approved", "rejected"].includes(status)) {
       return res.status(400).json({
@@ -14,17 +15,52 @@ const statusParticipation = async (req, res) => {
       });
     }
 
-    const result = await participationService.statusParticipationService(
-      requestParticipationId,
-      status
-    );
+    // Fetch the requestParticipation and populate event details
+    const request = await RequestParticipation.findById(
+      requestParticipationId
+    ).populate("event");
+    if (!request) {
+      return res.status(404).json({
+        message: "Participation request not found.",
+        state: false,
+      });
+    }
 
-    res.status(200).json({
-      message: `Participation request has been ${status}.`,
-      result,
-      state: true,
-    });
+    // Check if the user making the request is the event organizer
+    const isEventOrganizer = String(request.event.createdBy) === userId;
 
+    if (!isEventOrganizer) {
+      return res.status(403).json({
+        message:
+          "Unauthorized action. Only the event organizer can approve or reject participation requests.",
+        state: false,
+      });
+    }
+
+    // Proceed with approval or rejection logic
+    if (status === "approved") {
+      const result = await participationService.approveParticipationService(
+        requestParticipationId
+      );
+      return res
+        .status(200)
+        .json({
+          message: "Participation request approved.",
+          result,
+          state: true,
+        });
+    } else if (status === "rejected") {
+      const result = await participationService.rejectParticipationService(
+        requestParticipationId
+      );
+      return res
+        .status(200)
+        .json({
+          message: "Participation request rejected.",
+          result,
+          state: true,
+        });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message, state: false });
