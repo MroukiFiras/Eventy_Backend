@@ -6,7 +6,6 @@ const getUserByEmailService = async (email) => {
     "centerOfInterest",
     "name"
   );
-
   if (!user) {
     throw new Error("User not found");
   }
