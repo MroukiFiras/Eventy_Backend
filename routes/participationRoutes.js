@@ -10,6 +10,13 @@ router.get("/all", participationController.getAllParticipations);
 // Get a participation by ID route
 router.get("/:participationId", participationController.getParticipationById);
 
+// Approve/reject participation request
+router.patch(
+  "/:requestParticipationId/status",
+  authMiddleware.authTokenCheck,
+  participationController.statusParticipation
+);
+
 // Delete a participation route
 router.delete(
   "/cancel/:participationId",

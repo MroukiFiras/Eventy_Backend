@@ -30,23 +30,21 @@ const eventSchema = new mongoose.Schema({
     required: true,
   },
   location: {
-    type: String, 
+    type: String,
     required: true,
   },
   maxParticipants: {
     type: Number,
     required: true,
   },
-  category: { 
+  category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
-    required: true,
   },
   centerOfInterest: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CenterOfInterest",
-      required: true,
     },
   ],
   price: {

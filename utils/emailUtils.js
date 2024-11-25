@@ -1,3 +1,14 @@
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 const formatVerificationEmail = (token) => {
   const contactEmail = process.env.EMAIL_ADDR;
 
@@ -27,7 +38,6 @@ const formatVerificationEmail = (token) => {
 
 const formatPasswordResetEmail = (resetToken) => {
   const resetLink = `${process.env.FRONTEND_URL}/resetPassword?token=${resetToken}`;
-
   return `
     <div style="text-align: center; margin-top: 40px; max-width: 600px; margin: 0 auto; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333;">
       <h1 style="font-size: 28px; color: #333;">Reset Your Password</h1>
@@ -38,7 +48,31 @@ const formatPasswordResetEmail = (resetToken) => {
   `;
 };
 
+const formatGetApprovedEmail = (user, event, qrCodeUrl) => `
+  Hi ${user.name},
+
+  Congratulations! Your participation request for the event "${
+    event.title
+  }" has been approved. Below are the event details:
+
+  Event Name: ${event.title}
+  Date: ${formatDate(event.dateTime.dates[0])}
+  Location: ${event.location}
+
+  Please use the QR code below for check-in at the event:
+  <img src="${qrCodeUrl}" alt="QR Code" />
+
+  We look forward to seeing you there!
+
+  Regards,
+  Eventy Team
+`;
+
+const formatGetRejectedEmail = (user, event) => {};
+
 export default {
   formatVerificationEmail,
   formatPasswordResetEmail,
+  formatGetApprovedEmail,
+  formatGetRejectedEmail,
 };

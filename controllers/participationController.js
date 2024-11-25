@@ -1,4 +1,35 @@
 import participationService from "../services/participationService.js";
+import RequestParticipation from "../models/requestParticipationModel.js";
+
+// Approve or reject participation
+const statusParticipation = async (req, res) => {
+  try {
+    const { requestParticipationId } = req.params;
+    const { status } = req.body;
+
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status. Allowed values are 'approved' or 'rejected'.",
+        state: false,
+      });
+    }
+
+    const result = await participationService.statusParticipationService(
+      requestParticipationId,
+      status
+    );
+
+    res.status(200).json({
+      message: `Participation request has been ${status}.`,
+      result,
+      state: true,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message, state: false });
+  }
+};
 
 // Get all participations
 const getAllParticipations = async (req, res) => {
@@ -50,6 +81,7 @@ const cancelParticipation = async (req, res) => {
 };
 
 export default {
+  statusParticipation,
   getAllParticipations,
   getParticipationById,
   cancelParticipation,

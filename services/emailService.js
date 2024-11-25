@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import emailUtils from "../utils/emailUtils.js";
 
-// Sends an email using nodemailer.
+// Sends an email using nodemailer
 const sendEmail = async (to, { subject, message }) => {
   try {
     const smtpTransport = nodemailer.createTransport({
@@ -30,7 +30,7 @@ const sendEmail = async (to, { subject, message }) => {
   }
 };
 
-// Sends a verification email with a generated token.
+// Sends a verification email with a generated token
 const sendVerificationEmail = async (to, verificationToken) => {
   const emailContent = {
     subject: "Eventy! Confirm your email address",
@@ -40,7 +40,7 @@ const sendVerificationEmail = async (to, verificationToken) => {
   await sendEmail(to, emailContent);
 };
 
-// Sends a reset email with a generated token.
+// Sends a reset email with a generated token
 const sendPasswordResetEmail = async (to, resetToken) => {
   const emailContent = {
     subject: "Eventy! Forgot password",
@@ -49,8 +49,28 @@ const sendPasswordResetEmail = async (to, resetToken) => {
   await sendEmail(to, emailContent);
 };
 
+// Send email based on participation status
+const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
+  let emailContent;
+
+  if (status === "approved") {
+    emailContent = {
+      subject: `Eventy! Your Participation Request for ${event.title} Has Been Approved!`,
+      message: emailUtils.formatGetApprovedEmail(user, event, qrCodeUrl),
+    };
+  } else if (status === "rejected") {
+    emailContent = {
+      subject: `Eventy! Your Participation Request for ${event.title} Has Been Rejected`,
+      message: emailUtils.formatGetRejectedEmail(user, event),
+    };
+  }
+
+  await sendEmail(user.email, emailContent.subject, emailContent.message);
+};
+
 export default {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendParticipationEmail,
 };
