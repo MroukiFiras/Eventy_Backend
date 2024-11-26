@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import emailUtils from "../utils/emailUtils.js";
 
 // Sends an email using nodemailer
-const sendEmail = async (to, { subject, message }) => {
+const sendEmail = async (to, { subject, message, attachments = [] }) => {
   try {
     const smtpTransport = nodemailer.createTransport({
       service: process.env.EMAIL_SERVICE,
@@ -16,17 +16,18 @@ const sendEmail = async (to, { subject, message }) => {
     });
 
     const mailOptions = {
-      from: '"Eventy App" <example.gmail.com>',
+      from: '"Eventy App" <example@gmail.com>',
       to,
       subject,
       html: message,
+      attachments, // Add attachments with optional CID
     };
 
     await smtpTransport.sendMail(mailOptions);
-    // console.log(`Email sent to ${to}`);
+    console.log(`Email sent to ${to}`);
   } catch (error) {
-    // console.error(`Failed to send email: ${error.message}`);
-    res.status(500).json({ message: error.message, state: false });
+    console.error(`Failed to send email: ${error.message}`);
+    throw new Error("Failed to send email.");
   }
 };
 
@@ -56,7 +57,15 @@ const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
   if (status === "approved") {
     emailContent = {
       subject: `Eventy! Your Participation Request for ${event.title} Has Been Approved!`,
-      message: emailUtils.formatGetApprovedEmail(user, event, qrCodeUrl),
+      message: emailUtils.formatGetApprovedEmail(user, event), // Pass user and event only
+      attachments: [
+        {
+          filename: "qrcode.png",
+          content: qrCodeUrl.split(",")[1], // Extract Base64 data
+          encoding: "base64",
+          cid: "qrcode", // Content-ID for inline display
+        },
+      ],
     };
   } else if (status === "rejected") {
     emailContent = {
@@ -65,6 +74,7 @@ const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
     };
   }
 
+  // Send email with or without attachments
   await sendEmail(user.email, emailContent);
 };
 

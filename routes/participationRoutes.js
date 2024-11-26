@@ -24,4 +24,11 @@ router.delete(
   participationController.cancelParticipation
 );
 
+// Check in Route
+router.post(
+  "/checkIn",
+  authMiddleware.authTokenCheck,
+  participationController.verifyCheckIn
+);
+
 export default router;

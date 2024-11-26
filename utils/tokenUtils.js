@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 // Function to generate JWT token
 const generateAuthToken = (user) => {
@@ -19,7 +20,17 @@ const generateVerificationCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const generateSignedQrCodeData = (userId, eventId) => {
+  const data = `${userId}-${eventId}-${Date.now()}`;
+  const signature = crypto
+    .createHmac("sha256", process.env.SECRET_KEY)
+    .update(data)
+    .digest("hex");
+  return `${data}-${signature}`;
+};
+
 export default {
   generateAuthToken,
   generateVerificationCode,
+  generateSignedQrCodeData,
 };

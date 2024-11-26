@@ -4,7 +4,7 @@ import RequestParticipationService from "../services/RequestParticipationService
 const sendRequest = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const { id: userId } = req.user; // Correctly extract userId from req.user
+    const { id: userId } = req.user;
 
     const request = await RequestParticipationService.sendRequestService(
       userId,
@@ -54,7 +54,6 @@ const CancelRequest = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
 
 export default {
   sendRequest,

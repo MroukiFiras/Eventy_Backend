@@ -6,7 +6,7 @@ const statusParticipation = async (req, res) => {
   try {
     const { requestParticipationId } = req.params;
     const { status } = req.body;
-    const userId = req.user.id; // Extracted from token by middleware
+    const userId = req.user.id;
 
     if (!["approved", "rejected"].includes(status)) {
       return res.status(400).json({
@@ -15,7 +15,6 @@ const statusParticipation = async (req, res) => {
       });
     }
 
-    // Fetch the requestParticipation and populate event details
     const request = await RequestParticipation.findById(
       requestParticipationId
     ).populate("event");
@@ -26,41 +25,26 @@ const statusParticipation = async (req, res) => {
       });
     }
 
-    // Check if the user making the request is the event organizer
-    const isEventOrganizer = String(request.event.createdBy) === userId;
-
-    if (!isEventOrganizer) {
+    if (String(request.event.createdBy) !== userId) {
       return res.status(403).json({
         message:
-          "Unauthorized action. Only the event organizer can approve or reject participation requests.",
+          "Only the event organizer can approve or reject participation requests.",
         state: false,
       });
     }
 
-    // Proceed with approval or rejection logic
-    if (status === "approved") {
-      const result = await participationService.approveParticipationService(
-        requestParticipationId
-      );
-      return res
-        .status(200)
-        .json({
-          message: "Participation request approved.",
-          result,
-          state: true,
-        });
-    } else if (status === "rejected") {
-      const result = await participationService.rejectParticipationService(
-        requestParticipationId
-      );
-      return res
-        .status(200)
-        .json({
-          message: "Participation request rejected.",
-          result,
-          state: true,
-        });
-    }
+    const serviceMethod =
+      status === "approved"
+        ? participationService.approveParticipationService
+        : participationService.rejectParticipationService;
+
+    const result = await serviceMethod(requestParticipationId);
+
+    return res.status(200).json({
+      message: `Participation request ${status}.`,
+      result,
+      state: true,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message, state: false });
@@ -98,6 +82,7 @@ const getParticipationById = async (req, res) => {
   }
 };
 
+// Cancel participation
 const cancelParticipation = async (req, res) => {
   try {
     const { participationId } = req.params;
@@ -116,9 +101,45 @@ const cancelParticipation = async (req, res) => {
   }
 };
 
+// Verify check in
+const verifyCheckIn = async (req, res) => {
+  try {
+    const { qrCodeData } = req.body;
+    const currentUserId = req.user.id;
+
+    if (!qrCodeData) {
+      return res.status(400).json({
+        message: "QR code data is required",
+        state: false,
+      });
+    }
+
+    // Call the service to verify the check-in
+    const result = await participationService.verifyCheckInService(
+      qrCodeData,
+      currentUserId
+    );
+
+    return res.status(200).json({
+      message: result.message,
+      userId: result.userId,
+      eventId: result.eventId,
+      timestamp: result.timestamp,
+      state: true,
+    });
+  } catch (error) {
+    console.error("Check-in verification error:", error);
+    return res.status(500).json({
+      message: error.message || "An error occurred during check-in",
+      state: false,
+    });
+  }
+};
+
 export default {
   statusParticipation,
   getAllParticipations,
   getParticipationById,
   cancelParticipation,
+  verifyCheckIn,
 };

@@ -12,7 +12,7 @@ const participationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["approved", "rejected", "canceled"],
+      enum: ["approved", "rejected"],
       default: "approved",
     },
     isCheckedIn: {

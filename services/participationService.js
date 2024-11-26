@@ -3,19 +3,30 @@ import RequestParticipation from "../models/requestParticipationModel.js";
 import Event from "../models/eventModel.js";
 import User from "../models/userModel.js";
 import emailService from "./emailService.js";
+import qrCodeUtils from "../utils/qrCodeUtils.js";
 import QRCode from "qrcode";
 
-// Approve Participation service
+// Approve Participation Service
 const approveParticipationService = async (requestParticipationId) => {
-  const request = await RequestParticipation.findById(requestParticipationId).populate("user event");
+  const request = await RequestParticipation.findById(
+    requestParticipationId
+  ).populate("user event");
 
   if (!request) throw new Error("Participation request not found.");
+
   const { user, event } = request;
 
+  const participantCount = await Participation.countDocuments({
+    event: event._id,
+  });
+  if (participantCount >= event.maxParticipants) {
+    throw new Error("Event has reached its maximum participant capacity.");
+  }
+
   // Generate a QR code for event check-in
-  const qrCodeData = `${user._id}-${event._id}-${new Date().getTime()}`;
+  const qrCodeData = `${user._id}-${event._id}-${Date.now()}`;
   const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
-  console.log(qrCodeUrl)
+
   // Create Participation record
   const participation = await Participation.create({
     user: user._id,
@@ -24,19 +35,15 @@ const approveParticipationService = async (requestParticipationId) => {
     checkInToken: qrCodeData,
   });
 
-  // Save to user's participatedEvents
-  const userData = await User.findById(user._id);
-  if (!userData.participatedEvents.includes(participation._id)) {
-    userData.participatedEvents.push(participation._id);
-    await userData.save();
-  }
+  // Update user's participatedEvents
+  await User.findByIdAndUpdate(user._id, {
+    $addToSet: { participatedEvents: participation._id },
+  });
 
-  // Save to event's participants
-  const eventData = await Event.findById(event._id);
-  if (!eventData.participants.includes(participation._id)) {
-    eventData.participants.push(participation._id);
-    await eventData.save();
-  }
+  // Update event's participants
+  await Event.findByIdAndUpdate(event._id, {
+    $addToSet: { participants: participation._id },
+  });
 
   // Send approval email
   await emailService.sendParticipationEmail(user, event, qrCodeUrl, "approved");
@@ -49,7 +56,9 @@ const approveParticipationService = async (requestParticipationId) => {
 
 // Reject Participation service
 const rejectParticipationService = async (requestParticipationId) => {
-  const request = await RequestParticipation.findById(requestParticipationId).populate("user event");
+  const request = await RequestParticipation.findById(
+    requestParticipationId
+  ).populate("user event");
 
   if (!request) throw new Error("Participation request not found.");
   const { user, event } = request;
@@ -82,27 +91,86 @@ const getParticipationByIdService = async (participationId) => {
   return participation;
 };
 
+// Cancel participation Service
 const cancelParticipationService = async (participationId, userId) => {
   const participation = await Participation.findById(participationId).populate(
     "event"
   );
+
   if (!participation) {
     throw new Error("Participation record not found");
   }
 
   if (!participation.user.equals(userId)) {
-    throw new Error("Unauthorized: You can only cancel your own participation");
+    throw new Error(
+      "Unauthorized: You can only cancel your own participation."
+    );
   }
 
+  const { event } = participation;
+
+  // Remove participation record
   await Participation.findByIdAndDelete(participationId);
 
-  const event = participation.event;
-  event.participants = event.participants.filter(
-    (participantId) => !participantId.equals(participationId)
-  );
-  await event.save();
+  // Update user's participatedEvents
+  await User.findByIdAndUpdate(userId, {
+    $pull: { participatedEvents: participationId },
+  });
+
+  // Update event's participants
+  await Event.findByIdAndUpdate(event._id, {
+    $pull: { participants: participationId },
+  });
 
   return { message: "Participation has been canceled successfully" };
+};
+
+// Verify check in service
+const verifyCheckInService = async (qrCodeData, currentUserId) => {
+  const [userId, eventId, timestamp] = qrCodeData.split("-");
+
+  if (!userId || !eventId || !timestamp) {
+    throw new Error("Invalid QR code data");
+  }
+
+  // Verify event existence
+  const event = await Event.findById(eventId);
+  if (!event) {
+    throw new Error("Event not found");
+  }
+
+  // Ensure the current user is the event creator
+  if (event.createdBy.toString() !== currentUserId.toString()) {
+    throw new Error(
+      "Unauthorized: Only the event creator can perform the check-in."
+    );
+  }
+
+  // Verify participation record
+  const participation = await Participation.findOne({
+    user: userId,
+    event: eventId,
+    checkInToken: qrCodeData, // Match the exact token including timestamp
+  });
+  if (!participation) {
+    throw new Error("Participation record not found");
+  }
+
+  // Ensure user has not already checked in
+  if (participation.isCheckedIn) {
+    throw new Error("User has already checked in");
+  }
+
+  // Mark the user as checked in
+  participation.isCheckedIn = true;
+  await participation.save();
+
+  return {
+    message: "Check-in successful",
+    userId,
+    eventId,
+    timestamp: new Date(parseInt(timestamp)), // Return timestamp as Date
+  };
 };
 
 export default {
@@ -111,4 +179,5 @@ export default {
   getAllParticipationsService,
   getParticipationByIdService,
   cancelParticipationService,
+  verifyCheckInService,
 };

@@ -48,47 +48,44 @@ const formatPasswordResetEmail = (resetToken) => {
   `;
 };
 
-const formatGetApprovedEmail = (user, event, qrCodeUrl) => {
+const formatGetApprovedEmail = (user, event) => {
   return `
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;">
-    <div style="text-align: center; padding: 20px; background-color: #4CAF50; color: white; border-radius: 8px 8px 0 0;">
-      <h1 style="margin: 0;">Participation Approved! 🎉</h1>
-    </div>
-    
-    <div style="padding: 20px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
-      <p style="margin-top: 0;">Dear ${user.name},</p>
-      
-      <p>Great news! Your participation request for <strong>${
-        event.title
-      }</strong> has been approved.</p>
-      
-      <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-        <h2 style="margin-top: 0; color: #2c3e50;">Event Details</h2>
-        <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${formatDate(
-          event.date
-        )}</p>
-        <p style="margin: 5px 0;"><strong>Location:</strong> ${
-          event.location
-        }</p>
+      <div style="text-align: center; padding: 20px; background-color: #4CAF50; color: white; border-radius: 8px 8px 0 0;">
+        <h1 style="margin: 0;">Participation Approved! 🎉</h1>
       </div>
       
-      <div style="text-align: center; margin: 30px 0;">
-        <p style="font-weight: bold; color: #2c3e50;">Your Entry QR Code</p>
-        <img src="${qrCodeUrl}" alt="QR Code" style="max-width: 200px; border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px;">
-        <p style="color: #666; font-size: 14px;">Please present this QR code at the event check-in</p>
+      <div style="padding: 20px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
+        <p style="margin-top: 0;">Dear ${user.name},</p>
+        <p>Great news! Your participation request for <strong>${
+          event.title
+        }</strong> has been approved.</p>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h2 style="margin-top: 0; color: #2c3e50;">Event Details</h2>
+          <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${formatDate(
+            event.date
+          )}</p>
+          <p style="margin: 5px 0;"><strong>Location:</strong> ${
+            event.location
+          }</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <p style="font-weight: bold; color: #2c3e50;">Your Entry QR Code</p>
+          <img src="cid:qrcode" alt="QR Code" style="max-width: 200px; border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px;">
+          <p style="color: #666; font-size: 14px;">Please present this QR code at the event check-in</p>
+        </div>
+        
+        <div style="background-color: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0; color: #856404;"><strong>Important:</strong> Don't forget to bring your QR code to the event. You can either show it on your phone or bring a printed copy.</p>
+        </div>
       </div>
       
-      <div style="background-color: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
-        <p style="margin: 0; color: #856404;"><strong>Important:</strong> Don't forget to bring your QR code to the event. You can either show it on your phone or bring a printed copy.</p>
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
+        <p>This is an automated message, please do not reply to this email.</p>
+        <p>© ${new Date().getFullYear()} Event Management System. All rights reserved.</p>
       </div>
     </div>
-    
-    <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
-      <p>This is an automated message, please do not reply to this email.</p>
-      <p>© ${new Date().getFullYear()} Event Management System. All rights reserved.</p>
-    </div>
-  </div>
-  
   `;
 };
 
