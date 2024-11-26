@@ -3,7 +3,6 @@ import RequestParticipation from "../models/requestParticipationModel.js";
 import Event from "../models/eventModel.js";
 import User from "../models/userModel.js";
 import emailService from "./emailService.js";
-import qrCodeUtils from "../utils/qrCodeUtils.js";
 import QRCode from "qrcode";
 
 // Approve Participation Service
@@ -163,6 +162,7 @@ const verifyCheckInService = async (qrCodeData, currentUserId) => {
 
   // Mark the user as checked in
   participation.isCheckedIn = true;
+  participation.checkInTime = new Date();
   await participation.save();
 
   return {
