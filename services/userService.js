@@ -59,6 +59,7 @@ const editUserProfileService = async (userId, updates, file) => {
   return updatedUser;
 };
 
+
 export default {
   getUserByIdService,
   getUserByEmailService,

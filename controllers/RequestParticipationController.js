@@ -55,8 +55,30 @@ const CancelRequest = async (req, res) => {
   }
 };
 
+// Get vents the user has sent participation requests for
+const getRequestedEvents = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const events = await RequestParticipationService.getRequestedEventsService(
+      userId
+    );
+
+    if (!events || events.length === 0) {
+      return res.status(404).json({
+        message:
+          "No requested events found. You have not sent requests for any events yet.",
+      });
+    }
+
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export default {
   sendRequest,
   GetAllRequestes,
   CancelRequest,
+  getRequestedEvents,
 };

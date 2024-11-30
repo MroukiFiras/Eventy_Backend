@@ -19,6 +19,11 @@ router.delete(
   RequestParticipationController.CancelRequest
 );
 
-
+// Get vents the user has sent participation requests for route
+router.get(
+  "/requestedEvents",
+  authMiddleware.authTokenCheck,
+  RequestParticipationController.getRequestedEvents
+);
 
 export default router;

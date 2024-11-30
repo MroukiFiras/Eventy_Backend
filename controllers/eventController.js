@@ -199,6 +199,25 @@ const getEventsByCategory = async (req, res) => {
   }
 };
 
+// Get events user has NOT participated in or sent requests for
+const getAvailableEvents = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const events = await eventService.getAvailableEventsService(userId);
+
+    if (!events || events.length === 0) {
+      return res.status(404).json({
+        message:
+          "No available events found. You may have already participated or sent requests for all events.",
+      });
+    }
+
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export default {
   createEvent,
   updateEvent,
@@ -209,4 +228,5 @@ export default {
   deleteEvent,
   searchEventsByName,
   getEventsByCategory,
+  getAvailableEvents,
 };

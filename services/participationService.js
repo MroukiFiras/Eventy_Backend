@@ -173,6 +173,13 @@ const verifyCheckInService = async (qrCodeData, currentUserId) => {
   };
 };
 
+// Get all participated events service
+const getParticipatedEventsService = async (userId) => {
+  const participations = await Participation.find({ user: userId }).populate("event");
+  const events = participations.map((p) => p.event);
+  return events;
+};
+
 export default {
   approveParticipationService,
   rejectParticipationService,
@@ -180,4 +187,5 @@ export default {
   getParticipationByIdService,
   cancelParticipationService,
   verifyCheckInService,
+  getParticipatedEventsService,
 };

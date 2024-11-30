@@ -1,7 +1,4 @@
 import requestParticipation from "../models/requestParticipationModel.js";
-import eventService from "./eventService.js";
-import Participation from "../models/participationModel.js";
-
 
 // Sending participation request service
 const sendRequestService = async (userId, eventId) => {
@@ -53,6 +50,12 @@ const CancelRequestService = async (requestId) => {
   return { message: "Request has been deleted successfully" };
 };
 
+// Get events the user has sent participation requests for service
+const getRequestedEventsService = async (userId) => {
+  const requests = await requestParticipation.find({ user: userId }).populate("event");
+  const events = requests.map((r) => r.event);
+  return events;
+};
 
 
 
@@ -60,5 +63,5 @@ export default {
   sendRequestService,
   GetAllRequestesService,
   CancelRequestService,
-  
+  getRequestedEventsService,
 };

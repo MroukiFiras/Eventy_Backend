@@ -5,6 +5,13 @@ import image from "../services/imageService.js";
 
 const router = express.Router();
 
+// Get events user has NOT participated in or sent requests for route
+router.get(
+  "/availableEvents",
+  authMiddleware.authTokenCheck,
+  eventController.getAvailableEvents
+);
+
 // Get event by name route
 router.get("/search", eventController.searchEventsByName);
 

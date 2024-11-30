@@ -1,5 +1,7 @@
 import Event from "../models/eventModel.js";
 import User from "../models/userModel.js";
+import RequestParticipation from "../models/requestParticipationModel.js";
+import Participation from "../models/participationModel.js";
 import imageService from "./imageService.js";
 
 // Handle event creation service
@@ -148,6 +150,17 @@ const checkMaxParticipants = async (eventId) => {
   return event.participants.length >= event.maxParticipants;
 };
 
+// Get events user has NOT participated in or sent requests for service
+const getAvailableEventsService = async (userId) => {
+  const participatedEvents = await Participation.find({ user: userId }).distinct("event");
+  const requestedEvents = await RequestParticipation.find({ user: userId }).distinct("event");
+
+  const excludedEvents = [...participatedEvents, ...requestedEvents];
+
+  const availableEvents = await Event.find({ _id: { $nin: excludedEvents } });
+  return availableEvents;
+};
+
 export default {
   createEventService,
   updateEventService,
@@ -160,4 +173,5 @@ export default {
   getEventsByCategoryService,
   uploadEventProfileImage,
   checkMaxParticipants,
+  getAvailableEventsService,
 };

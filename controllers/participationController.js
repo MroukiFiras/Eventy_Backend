@@ -136,10 +136,32 @@ const verifyCheckIn = async (req, res) => {
   }
 };
 
+// Get all participated events
+const getParticipatedEvents = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const events = await participationService.getParticipatedEventsService(
+      userId
+    );
+
+    if (!events || events.length === 0) {
+      return res.status(404).json({
+        message:
+          "No participated events found. You have not participated in any events yet.",
+      });
+    }
+
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};  
+
 export default {
   statusParticipation,
   getAllParticipations,
   getParticipationById,
   cancelParticipation,
   verifyCheckIn,
+  getParticipatedEvents,
 };

@@ -4,6 +4,13 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+// get all the participated events route
+router.get(
+  "/participatedEvents",
+  authMiddleware.authTokenCheck,
+  participationController.getParticipatedEvents
+);
+
 // Get all participations route
 router.get("/all", participationController.getAllParticipations);
 
@@ -24,11 +31,13 @@ router.delete(
   participationController.cancelParticipation
 );
 
-// Check in Route
+// Check in route
 router.post(
   "/checkIn",
   authMiddleware.authTokenCheck,
   participationController.verifyCheckIn
 );
+
+
 
 export default router;
