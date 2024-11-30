@@ -7,7 +7,7 @@ const router = express.Router();
 // Create center of interest route (admin only)
 router.post(
   "/create",
-  authMiddleware.isAdmin,
+  // authMiddleware.isAdmin,
   adminCenterOfInterestController.createCenterOfInterest
 );
 
