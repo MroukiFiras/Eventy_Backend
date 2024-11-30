@@ -7,7 +7,7 @@ const router = express.Router();
 // Create category route (admin only)
 router.post(
   "/create",
-  // authMiddleware.isAdmin,
+  authMiddleware.isAdmin,
   adminCategoryController.createCategory
 );
 
