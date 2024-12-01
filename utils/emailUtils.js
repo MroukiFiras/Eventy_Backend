@@ -157,7 +157,46 @@ const formatGetApprovedEmail = (user, event) => {
   `;
 };
 
-const formatGetRejectedEmail = (user, event) => {};
+const formatGetRejectedEmail = (user, event, contactEmail) => {
+  return `
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333;">
+        <div style="text-align: center; padding: 20px; background-color: #f1001c; color: white; border-radius: 8px 8px 0 0;">
+            <h1 style="margin: 0; font-size: 24px;">Participation Status Update</h1>
+        </div>
+
+        <div style="padding: 20px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
+            <p style="margin-top: 0; font-size: 16px;">Dear <strong>${
+              user.name
+            }</strong>,</p>
+            <p style="font-size: 16px;">Thank you for your interest in <strong style="color: #f1001c;">${
+              event.title
+            }</strong>. Unfortunately, we are unable to approve your participation request at this time.</p>
+
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; font-weight: bold; color: #2c3e50;">We encourage you to:</p>
+                <ul style="margin: 10px 0; padding-left: 20px; color: #333;">
+                    <li>Explore our upcoming events</li>
+                    <li>Subscribe to our newsletter for future updates</li>
+                    <li>Follow us on social media for real-time announcements</li>
+                </ul>
+            </div>
+
+            <p style="font-size: 16px;">We appreciate your understanding and hope to see you at future events. Keep an eye on our platform for upcoming opportunities that might interest you.</p>
+
+            <p>If you have any questions or need further assistance, feel free to contact us at 
+                <a href="mailto:${contactEmail}" style="color: #f1001c; font-weight: bold; text-decoration: none;">${contactEmail}</a>.
+            </p>
+
+            <p style="font-size: 16px;">Best regards,<br>The Eventy Team</p>
+        </div>
+
+        <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
+            <p>This is an automated message, please do not reply to this email.</p>
+            <p>© ${new Date().getFullYear()} Event Management System. All rights reserved.</p>
+        </div>
+    </div>
+  `;
+};
 
 export default {
   formatVerificationEmail,
