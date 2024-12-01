@@ -157,7 +157,7 @@ const formatGetApprovedEmail = (user, event) => {
   `;
 };
 
-const formatGetRejectedEmail = (user, event, contactEmail) => {
+const formatGetRejectedEmail = (user, event) => {
   return `
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333;">
         <div style="text-align: center; padding: 20px; background-color: #f1001c; color: white; border-radius: 8px 8px 0 0;">
@@ -170,11 +170,11 @@ const formatGetRejectedEmail = (user, event, contactEmail) => {
             }</strong>,</p>
             <p style="font-size: 16px;">Thank you for your interest in <strong style="color: #f1001c;">${
               event.title
-            }</strong>. Unfortunately, we are unable to approve your participation request at this time.</p>
+            }</strong> Unfortunately, we are unable to approve your participation request at this time.</p>
 
             <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <p style="margin: 0; font-weight: bold; color: #2c3e50;">We encourage you to:</p>
-                <ul style="margin: 10px 0; padding-left: 20px; color: #333;">
+                <p style="margin: 0; font-weight: bold; color: #2c3e50; font-size: 16px;">We encourage you to:</p>
+                <ul style="margin: 10px 0; padding-left: 20px; color: #333; font-size: 15px;">
                     <li>Explore our upcoming events</li>
                     <li>Subscribe to our newsletter for future updates</li>
                     <li>Follow us on social media for real-time announcements</li>
@@ -183,7 +183,7 @@ const formatGetRejectedEmail = (user, event, contactEmail) => {
 
             <p style="font-size: 16px;">We appreciate your understanding and hope to see you at future events. Keep an eye on our platform for upcoming opportunities that might interest you.</p>
 
-            <p>If you have any questions or need further assistance, feel free to contact us at 
+            <p style="font-size: 16px;">If you have any questions or need further assistance, feel free to contact us at 
                 <a href="mailto:${contactEmail}" style="color: #f1001c; font-weight: bold; text-decoration: none;">${contactEmail}</a>.
             </p>
 
