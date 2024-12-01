@@ -112,9 +112,9 @@ const formatGetApprovedEmail = (user, event) => {
     </div>
 
     <div style="padding: 20px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
-        <p style="margin-top: 0; font-size: 16px; font-weight: 400; color: #333;">Dear ${
+        <p style="margin-top: 0; font-size: 16px; font-weight: 400; color: #333;">Dear <strong> ${
           user.name
-        },</p>
+        }</strong>,</p>
         <p style="font-size: 16px; font-weight: 400; color: #333;">Great news! We are excited to inform you that your participation request for <strong style="color: #570cf8;">${
           event.title
         }</strong> has been approved.</p>
