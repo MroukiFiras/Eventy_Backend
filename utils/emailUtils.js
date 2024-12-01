@@ -9,9 +9,9 @@ const formatDate = (date) => {
   });
 };
 
-const formatVerificationEmail = (token) => {
-  const contactEmail = process.env.EMAIL_ADDR;
+const contactEmail = process.env.EMAIL_ADDR;
 
+const formatVerificationEmail = (token) => {
   return `
     <div style="text-align: center; margin-top: 40px; max-width: 600px; margin: 0 auto; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333;">
       <img src="https://res.cloudinary.com/db8sek2rg/image/upload/v1731271852/sendEmail_hc3wdn.png" style="width: 150px; margin-bottom: 20px;">
@@ -32,6 +32,10 @@ const formatVerificationEmail = (token) => {
         If you have any questions or need assistance, our support team is here to help. Contact us at <a href="mailto:${contactEmail}" style="color: #570cf8 !important;">${contactEmail}</a>.
       </p>
       <p style="text-align: left; font-size: 16px; font-weight: 400; color: #333 !important;">Best regards,<br>The Eventy Team</p>
+      <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
+        <p>This is an automated message, please do not reply to this email.</p>
+        <p>© ${new Date().getFullYear()} Eventy Management System. All rights reserved.</p>
+      </div>
     </div>
   `;
 };
@@ -39,11 +43,61 @@ const formatVerificationEmail = (token) => {
 const formatPasswordResetEmail = (resetToken) => {
   const resetLink = `${process.env.FRONTEND_URL}/resetPassword?token=${resetToken}`;
   return `
-    <div style="text-align: center; margin-top: 40px; max-width: 600px; margin: 0 auto; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333;">
-      <h1 style="font-size: 28px; color: #333;">Reset Your Password</h1>
-      <p style="font-size: 16px;">Click the link below to reset your password:</p>
-      <a href="${resetLink}" style="font-size: 16px; color: #570cf8;">Reset Password</a>
-      <p style="font-size: 16px; color: #333;">This link will expire in 1 hour.</p>
+    <div
+        style="text-align: center; max-width: 600px; margin: 40px auto; padding: 40px 20px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif; color: #333; background-color: #ffffff; 
+        border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        
+        <div style="margin-bottom: 30px;">
+            <img src="https://res.cloudinary.com/db8sek2rg/image/upload/v1732478626/forgot_jmtvd9.png" alt="Lock Icon"
+                style="width: 100%; max-width: 600px; height: auto;">
+        </div>
+
+        <h2 style="font-size: 24px; font-weight: bold; margin: 0 0 30px; color: #333333;">
+            Reset Your Password
+        </h2>
+
+        <div style="text-align: left; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+            <p>Hello there,</p>
+            <p>
+                We’ve received a request to reset your password. If you didn’t make this request, you can safely ignore
+                this email. Otherwise, click the button below to proceed with resetting your password:
+            </p>
+        </div>
+
+        <a href="${resetLink}" style="display: inline-block; 
+                  background-color: #570cf8; 
+                  color: white; 
+                  padding: 15px 40px; 
+                  text-decoration: none; 
+                  border-radius: 50px; 
+                  font-size: 16px; 
+                  font-weight: bold; 
+                  margin-top: 20px;
+                  transition: background-color 0.3s ease;">
+            RESET PASSWORD
+        </a>
+
+        <p style="font-size: 14px; margin-top: 25px; margin-bottom: 35px;">
+            Note: This link will expire in 1 hour.
+        </p>
+
+        <div style="text-align: left; font-size: 16px; line-height: 1.6;">
+            <p>
+                If you have any questions or need assistance, our support team is here to help. Contact us at
+                <a href="mailto:${contactEmail}" style="color: #570cf8; text-decoration: none; font-weight: bold;">
+                    ${contactEmail}
+                </a>.
+            </p>
+            <p>Best regards,<br>The Eventy Team</p>
+        </div>
+    </div>
+
+    <div
+        style="text-align: center; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; 
+        color: #666; font-size: 12px;">
+        <p>This is an automated message, please do not reply to this email.</p>
+        <p>© ${new Date().getFullYear()} Eventy Management System. All rights reserved.</p>
     </div>
   `;
 };
@@ -63,7 +117,7 @@ const formatGetApprovedEmail = (user, event) => {
         <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h2 style="margin-top: 0; color: #2c3e50;">Event Details</h2>
           <p style="margin: 5px 0;"><strong>Date & Time:</strong> ${formatDate(
-            event.date
+            event.dateTime
           )}</p>
           <p style="margin: 5px 0;"><strong>Location:</strong> ${
             event.location
@@ -83,7 +137,7 @@ const formatGetApprovedEmail = (user, event) => {
       
       <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
         <p>This is an automated message, please do not reply to this email.</p>
-        <p>© ${new Date().getFullYear()} Event Management System. All rights reserved.</p>
+        <p>© ${new Date().getFullYear()} Eventy Management System. All rights reserved.</p>
       </div>
     </div>
   `;

@@ -20,13 +20,13 @@ const sendEmail = async (to, { subject, message, attachments = [] }) => {
       to,
       subject,
       html: message,
-      attachments, // Add attachments with optional CID
+      attachments, 
     };
 
     await smtpTransport.sendMail(mailOptions);
-    console.log(`Email sent to ${to}`);
+    // console.log(`Email sent to ${to}`);
   } catch (error) {
-    console.error(`Failed to send email: ${error.message}`);
+    // console.error(`Failed to send email: ${error.message}`);
     throw new Error("Failed to send email.");
   }
 };
@@ -57,13 +57,13 @@ const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
   if (status === "approved") {
     emailContent = {
       subject: `Eventy! Your Participation Request for ${event.title} Has Been Approved!`,
-      message: emailUtils.formatGetApprovedEmail(user, event), // Pass user and event only
+      message: emailUtils.formatGetApprovedEmail(user, event), 
       attachments: [
         {
           filename: "qrcode.png",
-          content: qrCodeUrl.split(",")[1], // Extract Base64 data
+          content: qrCodeUrl.split(",")[1], 
           encoding: "base64",
-          cid: "qrcode", // Content-ID for inline display
+          cid: "qrcode",
         },
       ],
     };
@@ -74,7 +74,6 @@ const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
     };
   }
 
-  // Send email with or without attachments
   await sendEmail(user.email, emailContent);
 };
 
