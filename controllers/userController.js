@@ -17,7 +17,7 @@ const getUserByEmail = async (req, res) => {
   }
 
   try {
-    const user = await getUserByEmailService(email);
+    const user = await userService.getUserByEmailService(email);
 
     // Remove sensitive fields before sending the response
     const userWithoutPassword = {

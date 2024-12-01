@@ -20,7 +20,13 @@ const app = express();
 
 // Middleware
 app.use(morgan("dev"));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:8100", // Replace with your frontend's URL if needed
+    exposedHeaders: ["auth-token"], // Allow the frontend to access the 'auth-token' header
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -26,7 +26,7 @@ router.patch(
 
 // Delete a participation route
 router.delete(
-  "/cancel/:participationId",
+  "/cancel/:eventId",
   authMiddleware.authTokenCheck,
   participationController.cancelParticipation
 );
@@ -37,7 +37,5 @@ router.post(
   authMiddleware.authTokenCheck,
   participationController.verifyCheckIn
 );
-
-
 
 export default router;

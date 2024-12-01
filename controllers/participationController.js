@@ -85,19 +85,26 @@ const getParticipationById = async (req, res) => {
 // Cancel participation
 const cancelParticipation = async (req, res) => {
   try {
-    const { participationId } = req.params;
+    const { eventId } = req.params;
     const userId = req.user.id;
 
     // Call the service to cancel the participation
     const response = await participationService.cancelParticipationService(
-      participationId,
+      eventId,
       userId
     );
 
-    return res.status(200).json(response);
+    return res.status(200).json({
+      message: response.message,
+      state: true,
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message });
+    console.error("Cancel Participation Error:", error);
+    return res.status(500).json({
+      message:
+        error.message || "An error occurred while canceling participation",
+      state: false,
+    });
   }
 };
 
@@ -155,7 +162,7 @@ const getParticipatedEvents = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};  
+};
 
 export default {
   statusParticipation,

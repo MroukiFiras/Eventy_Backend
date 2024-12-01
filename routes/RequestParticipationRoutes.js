@@ -15,11 +15,12 @@ router.get("/all/:eventId", RequestParticipationController.GetAllRequestes);
 
 // Cancel the the participation request route
 router.delete(
-  "/cancel/:requestId",
+  "/cancel/:eventId",
+  authMiddleware.authTokenCheck,
   RequestParticipationController.CancelRequest
 );
 
-// Get vents the user has sent participation requests for route
+// Get events the user has sent participation requests for route
 router.get(
   "/requestedEvents",
   authMiddleware.authTokenCheck,

@@ -31,12 +31,15 @@ const GetAllRequestesService = async (eventId) => {
 };
 
 // Service method to cancel a user's participation request
-const CancelRequestService = async (requestId) => {
-  // Find the request by its ID
-  const request = await requestParticipation.findById(requestId);
+const CancelRequestService = async (eventId, userId) => {
+  // Find the request by event ID and user ID
+  const request = await requestParticipation.findOne({
+    event: eventId,
+    user: userId,
+  });
 
   if (!request) {
-    throw new Error("Request not found");
+    throw new Error("No request found for this event and user");
   }
 
   // Ensure the request status is still pending before canceling
@@ -44,20 +47,20 @@ const CancelRequestService = async (requestId) => {
     throw new Error("You can only cancel pending requests");
   }
 
-  // Delete the request from the database
-  await requestParticipation.findByIdAndDelete(requestId);
+  // Delete the request
+  await requestParticipation.deleteOne({ _id: request._id });
 
-  return { message: "Request has been deleted successfully" };
+  return { message: "Request has been canceled successfully" };
 };
 
 // Get events the user has sent participation requests for service
 const getRequestedEventsService = async (userId) => {
-  const requests = await requestParticipation.find({ user: userId }).populate("event");
+  const requests = await requestParticipation
+    .find({ user: userId })
+    .populate("event");
   const events = requests.map((r) => r.event);
   return events;
 };
-
-
 
 export default {
   sendRequestService,

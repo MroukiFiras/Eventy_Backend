@@ -31,7 +31,7 @@ const formatVerificationEmail = (token) => {
         <li style="margin-bottom: 8px;">Real-Time Notifications: Stay up-to-date with instant notifications about upcoming events, new connections, and messages from fellow users.</li>
       </ol>
       <p style="margin-top: 20px; text-align: left; font-size: 16px; font-weight: 400; color: #333 !important;">
-        If you have any questions or need assistance, our support team is here to help. Contact us at <a href="mailto:${contactEmail}" style="color: #570cf8 !important;">${contactEmail}</a>.
+        If you have any questions or need assistance, our support team is here to help. Contact us at <a href="mailto:${contactEmail}" style="color: #570cf8; font-weight: bold; text-decoration: none;"">${contactEmail}</a>.
       </p>
       <p style="text-align: left; font-size: 16px; font-weight: 400; color: #333 !important;">Best regards,<br>The Eventy Team</p>
       <div style="text-align: center; padding: 20px; color: #666; font-size: 12px;">
@@ -93,14 +93,16 @@ const formatPasswordResetEmail = (resetToken) => {
             </p>
             <p>Best regards,<br>The Eventy Team</p>
         </div>
-    </div>
 
-    <div
+        <div
         style="text-align: center; padding: 20px; font-family: Verdana, Geneva, Tahoma, sans-serif; 
         color: #666; font-size: 12px;">
         <p>This is an automated message, please do not reply to this email.</p>
         <p>© ${new Date().getFullYear()} Eventy Management System. All rights reserved.</p>
     </div>
+    </div>
+
+
   `;
 };
 

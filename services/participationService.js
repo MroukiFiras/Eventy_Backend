@@ -7,14 +7,24 @@ import QRCode from "qrcode";
 
 // Approve Participation Service
 const approveParticipationService = async (requestParticipationId) => {
+  // Find the participation request and populate user and event
   const request = await RequestParticipation.findById(
     requestParticipationId
   ).populate("user event");
 
-  if (!request) throw new Error("Participation request not found.");
+  // Check if the request was not found
+  if (!request) {
+    throw new Error("Participation request not found.");
+  }
 
   const { user, event } = request;
 
+  // Ensure that user and event are not null
+  if (!user || !event) {
+    throw new Error("User or event data is missing.");
+  }
+
+  // Check if the event has reached its maximum participants
   const participantCount = await Participation.countDocuments({
     event: event._id,
   });
@@ -26,7 +36,7 @@ const approveParticipationService = async (requestParticipationId) => {
   const qrCodeData = `${user._id}-${event._id}-${Date.now()}`;
   const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
 
-  // Create Participation record
+  // Create a new Participation record
   const participation = await Participation.create({
     user: user._id,
     event: event._id,
@@ -91,38 +101,37 @@ const getParticipationByIdService = async (participationId) => {
 };
 
 // Cancel participation Service
-const cancelParticipationService = async (participationId, userId) => {
-  const participation = await Participation.findById(participationId).populate(
-    "event"
-  );
+const cancelParticipationService = async (eventId, userId) => {
+  // Find the participation record for the event and user
+  const participation = await Participation.findOne({ event: eventId, user: userId }).populate("event");
 
   if (!participation) {
-    throw new Error("Participation record not found");
+    throw new Error("No participation record found for this event and user");
   }
 
-  if (!participation.user.equals(userId)) {
-    throw new Error(
-      "Unauthorized: You can only cancel your own participation."
-    );
+  // Ensure the participation status is not already canceled
+  if (participation.status === "canceled") {
+    throw new Error("Participation is already canceled");
   }
 
   const { event } = participation;
 
-  // Remove participation record
-  await Participation.findByIdAndDelete(participationId);
+  // Delete the participation record
+  await Participation.deleteOne({ _id: participation._id });
 
   // Update user's participatedEvents
   await User.findByIdAndUpdate(userId, {
-    $pull: { participatedEvents: participationId },
+    $pull: { participatedEvents: participation._id },
   });
 
   // Update event's participants
   await Event.findByIdAndUpdate(event._id, {
-    $pull: { participants: participationId },
+    $pull: { participants: participation._id },
   });
 
   return { message: "Participation has been canceled successfully" };
 };
+
 
 // Verify check in service
 const verifyCheckInService = async (qrCodeData, currentUserId) => {
@@ -175,7 +184,9 @@ const verifyCheckInService = async (qrCodeData, currentUserId) => {
 
 // Get all participated events service
 const getParticipatedEventsService = async (userId) => {
-  const participations = await Participation.find({ user: userId }).populate("event");
+  const participations = await Participation.find({ user: userId }).populate(
+    "event"
+  );
   const events = participations.map((p) => p.event);
   return events;
 };

@@ -39,19 +39,24 @@ const GetAllRequestes = async (req, res) => {
   }
 };
 
+// Cancel a user's participation
 const CancelRequest = async (req, res) => {
   try {
-    const { requestId } = req.params; // Get requestId from the URL params
+    const { eventId } = req.params;
+    const userId = req.user.id;
 
     // Call the service to cancel (delete) the request
     const response = await RequestParticipationService.CancelRequestService(
-      requestId
+      eventId,
+      userId
     );
 
     return res.status(200).json(response);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: error.message });
+    console.error("Error canceling request:", error);
+    return res
+      .status(500)
+      .json({ message: error.message || "Failed to cancel request" });
   }
 };
 

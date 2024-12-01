@@ -69,7 +69,7 @@ const sendParticipationEmail = async (user, event, qrCodeUrl, status) => {
     };
   } else if (status === "rejected") {
     emailContent = {
-      subject: `Eventy! Your Participation Request for ${event.title} Has Been Rejected`,
+      subject: `Eventy! Your Participation Request for ${event.title} Has Been Rejected!`,
       message: emailUtils.formatGetRejectedEmail(user, event),
     };
   }
