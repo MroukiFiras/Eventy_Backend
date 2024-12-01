@@ -92,7 +92,7 @@ const requestPasswordResetService = async (email) => {
   if (!user) throw new Error("User not found.");
 
   // Generate a password reset token
-  const resetToken = tokenUtils.generateAuthToken(email);
+  const resetToken = tokenUtils.generateAuthTokenForPasswordReset(email);
 
   // Store the reset token and its expiration time in the user's tokenInfo field
   user.tokenInfo = {
@@ -113,7 +113,7 @@ const resendPasswordResetTokenService = async (email) => {
   if (!user) throw new Error("User not found.");
 
   // If there is already an existing token but it's expired, create a new one
-  const resetToken = tokenUtils.generateAuthToken(email);
+  const resetToken = tokenUtils.generateAuthTokenForPasswordReset(email);
 
   // Update the token and expiration time in the user's tokenInfo field
   user.tokenInfo = {

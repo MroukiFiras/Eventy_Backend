@@ -15,6 +15,18 @@ const generateAuthToken = (user) => {
   );
 };
 
+const generateAuthTokenForPasswordReset = (email) => {
+  return jwt.sign(
+    {
+      id: email,
+    },
+    process.env.AUTH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.JWT_TOKEN_EXPIRATION,
+    }
+  );
+};
+
 // Generates a 6-digit numeric verification code.
 const generateVerificationCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -31,6 +43,7 @@ const generateSignedQrCodeData = (userId, eventId) => {
 
 export default {
   generateAuthToken,
+  generateAuthTokenForPasswordReset,
   generateVerificationCode,
   generateSignedQrCodeData,
 };

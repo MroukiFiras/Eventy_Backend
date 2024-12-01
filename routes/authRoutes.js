@@ -24,6 +24,7 @@ router.post("/passwordReset/request", authController.requestPasswordReset);
 // Route to verify the password token
 router.post(
   "/passwordReset/verifyToken",
+  
   authController.verifyPasswordResetToken
 );
 
